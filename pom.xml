@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>myproject</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+
+    <!--Inherit defaults from Spring boot
+        if any dependency or property in configured in both parent and child POMs with
+        different values the the child POM value will the the priority
+        you can also use:
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-dependencies</artifactId>
+            <version>1.5.9.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope> //the import scope is only used on dependency of type pom,it
+                                  //indicates that the specified POM should be replaced with the dependencies
+                                  //in that POM's section
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.9.RELEASE</version>
+    </parent>
+
+    <!--
+        starter for building web,including RESTful,applications using Spring MVC,use
+        tomcat as the default embedded container
+    -->
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+    </dependencies>
+
+
+    <!--omit this ,after you run mvn package command,java -jar filename.jar will say no main manifest attributes
+        this plugin can help you package the project as an executable jar
+     -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--
+        compile the project to a specific version
+        default inherited from parent is java 1.6
+    -->
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
+</project>
