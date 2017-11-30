@@ -28,8 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @SpringBootApplication
 public class Example {
     public static void main(String[] args) throws Exception {
-        SpringApplication app = new SpringApplication(Example.class);
-        app.setBannerMode(Banner.Mode.OFF);
-        app.run(args);
+        SpringApplication.run(Example.class,args);
+        Syssf
     }
 }
