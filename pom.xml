@@ -19,6 +19,8 @@
             <scope>import</scope> //the import scope is only used on dependency of type pom,it
                                   //indicates that the specified POM should be replaced with the dependencies
                                   //in that POM's section
+        you only need to specify the Spring Boot version once in the parent module configuration,
+        includes the most commonly used plugins.
     -->
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,15 +28,38 @@
         <version>1.5.9.RELEASE</version>
     </parent>
 
-    <!--
-        starter for building web,including RESTful,applications using Spring MVC,use
-        tomcat as the default embedded container
-    -->
+
     <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-web</artifactId>
-      </dependency>
+        <!--
+            starter for building com.google.springboot.controller.web,including RESTful,applications using Spring MVC,use
+            tomcat as the default embedded container
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            provide additional development-time features,applications that use spring-boot-devtools will automatically
+            restart whenever files ON THE CLASSPATH changes.As DevTools monitors classpath resource,the only way to trigger
+            a restart is to update the classpath.certain resources such as static assets and view templates do not need
+            to restart the application.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            the dependency is not required for normal use of the application,
+            and is only available for the test compilation and execution phases.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
@@ -53,6 +78,10 @@
     <!--
         compile the project to a specific version
         default inherited from parent is java 1.6
+
+        you can also use:
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     -->
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
