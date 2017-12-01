@@ -9,7 +9,7 @@ public class JdbcUserDAO implements UserDAO {
 
     @Override
     public List<String> getAllUserNames() {
-        System.out.println("*** getting username from RDBMS***");
+        System.out.println("*** getting username from RDBMS ***");
         return Arrays.asList("Jim","john","Rob");
     }
 }

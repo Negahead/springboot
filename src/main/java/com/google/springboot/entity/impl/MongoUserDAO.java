@@ -9,6 +9,6 @@ public class MongoUserDAO implements UserDAO {
     @Override
     public List<String> getAllUserNames() {
         System.out.println("*** getting usernames from MongoDB***");
-        return Arrays.asList("*** Getting usernames from MongoDB ***");
+        return Arrays.asList("Bond","James","Bond");
     }
 }
