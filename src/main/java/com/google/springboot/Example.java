@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 // The key difference between a traditional spring MVC controller and the RESTful com.google.springboot.controller.web com.google.springboot.controller.service contoller
 // is the way the HTTP response body is created,while the traditional MVC controller relies on the View technology
-// the RESTfu; com.google.springboot.controller.web com.google.springboot.controller.service controller simply returns the object and the object is written directly to the HTTP
+// the RESTful com.google.springboot.controller.web com.google.springboot.controller.service controller simply returns the object and the object is written directly to the HTTP
 // response as JSON/XML
 // @RestController
 // @EnableAutoConfiguration

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/home",method = RequestMethod.POST)
+@RequestMapping(path = "/home",method = RequestMethod.GET)
 public class HomeController {
     @Autowired
     HomeService homeService;
@@ -16,5 +16,10 @@ public class HomeController {
     @RequestMapping("/index")
     public ResponseResult home() {
         return homeService.home();
+    }
+
+    @RequestMapping("/userInfo")
+    public ResponseResult getUserInfo() {
+        return homeService.getUserInfo();
     }
 }
