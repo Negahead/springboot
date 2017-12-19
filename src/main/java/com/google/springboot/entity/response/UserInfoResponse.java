@@ -1,4 +1,4 @@
-package com.google.springboot.entity.request;
+package com.google.springboot.entity.response;
 
 import java.io.Serializable;
 

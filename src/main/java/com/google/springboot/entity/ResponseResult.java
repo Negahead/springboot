@@ -1,12 +1,14 @@
 package com.google.springboot.entity;
 
+import com.google.springboot.entity.enums.ErrorCodeEnum;
+
 import java.io.Serializable;
 
 public class ResponseResult<T> implements Serializable {
     public static final long serialVersionUID = 1L;
 
-    private String res = "";
-    private String errCode = "";
+    private String res = "fail";
+    private int errCode;
     private T data;
 
     public String getRes() {
@@ -17,14 +19,6 @@ public class ResponseResult<T> implements Serializable {
         this.res = res;
     }
 
-    public String getErrCode() {
-        return errCode;
-    }
-
-    public void setErrCode(String errCode) {
-        this.errCode = errCode;
-    }
-
     public T getData() {
         return data;
     }
@@ -33,11 +27,22 @@ public class ResponseResult<T> implements Serializable {
         this.data = data;
     }
 
-    public ResponseResult() {
+    public int getErrCode() {
+        return errCode;
+    }
 
+    public void setErrCode(int errCode) {
+        this.errCode = errCode;
     }
 
     public ResponseResult(T data) {
         this.data = data;
+        this.res = "success";
     }
+
+    public ResponseResult(ErrorCodeEnum errorCodeEnum) {
+        this.errCode = errorCodeEnum.getErrorCode();
+    }
+
+
 }

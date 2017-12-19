@@ -3,7 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.google.springboot.mapper.r.UserInfoRMapper">
-    <select id="getUserInfo" resultType="com.google.springboot.entity.request.UserInfoResponse">
+    <select id="getUserInfo" resultType="com.google.springboot.entity.response.UserInfoResponse">
         select userId,userName,userPwd from mis_user_info where userId=104
+    </select>
+
+    <select id="getExistingIds" resultType="java.lang.Integer">
+        select userFid from mis_user_data_org_ref where orgFid=#{oldOrgFid} and userFid in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            userId
+        </foreach>
     </select>
 </mapper>
