@@ -10,13 +10,13 @@
 
     <!--Inherit defaults from Spring boot
         if any dependency or property in configured in both parent and child POMs with
-        different values the the child POM value will the the priority
+        different values the the child POM value will be the the priority
         you can also use:
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-dependencies</artifactId>
             <version>1.5.9.RELEASE</version>
             <type>pom</type>
-            <scope>import</scope> //the import scope is only used on dependency of type pom,it
+            <scope>import</scope> //the import scope is only used on dependency of type "pom",it
                                   //indicates that the specified POM should be replaced with the dependencies
                                   //in that POM's section
         you only need to specify the Spring Boot version once in the parent module configuration,
@@ -37,6 +37,60 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            JPA Data,we are going to use Repositories,Entities,Hibernate...
+            The Java persistence API is a standard technology that allows you to 'map' Objects to re
+            relational databases.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>1.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.alibaba</groupId>-->
+            <!--<artifactId>druid</artifactId>-->
+            <!--<version>1.1.6</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.mybatis</groupId>-->
+            <!--<artifactId>mybatis</artifactId>-->
+            <!--<version>3.4.1</version>-->
+        <!--</dependency>-->
+
+        <!--
+            SqlSessionTemplate is the heart of MyBatis-Spring. It implements SqlSession and is meant to be a drop-in replacement
+            for any existing use of SqlSession in your code. SqlSessionTemplate is thread safe and can be shared by multiple DAOs or mappers.
+            SqlSessionTemplate should always be used instead of default MyBatis implementation DefaultSqlSession because the template
+            can participate in Spring transactions and is thread safe for use by multiple injected mapper classes.
+            and one of the primary reasons for using MyBatis-Spring is that it allows MyBatis to participate in Spring transactions.
+        -->
+        <!--<dependency>-->
+            <!--<groupId>org.mybatis</groupId>-->
+            <!--<artifactId>mybatis-spring</artifactId>-->
+            <!--<version>1.3.0</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-data-jpa</artifactId>-->
+        <!--</dependency>-->
+
+        <!-- com.mysql.jdbc.Driver  -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
         <!--
