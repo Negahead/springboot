@@ -18,6 +18,11 @@ public class AppConfig {
      * bean will be registered.
      * @return
      */
+
+    /**
+     * By default,the bean name will be the same as the method name
+     * @return
+     */
     @Bean
     @Conditional(MySQLDatabaseTypeCondition.class)
     public UserDAO jdbcUserDAO() {

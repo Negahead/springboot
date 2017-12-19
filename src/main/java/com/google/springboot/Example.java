@@ -6,8 +6,10 @@
  */
 package com.google.springboot;
 
+import com.google.springboot.entity.request.OrgOperationRequest;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.web.bind.annotation.*;
 
 // The key difference between a traditional spring MVC controller and the RESTful com.google.springboot.controller.web com.google.springboot.controller.service contoller
@@ -25,6 +27,18 @@ import org.springframework.web.bind.annotation.*;
    @EnableAutoConfiguration triggers Spring Boot's auto-configuration mechanisms
    this entry class will take care of scanning other Spring configuration classes in all the sub-packages;
  */
+
+/**
+ *  It is highly recommended that you put the main entry point class in the root package,so that
+ *  @EnableAutoConfiguration and @ComponentScan annotation will scan for Spring beans,
+ *  JPA entries etc.If you have an entry point class in a nested package you might need to specify the basePackages to scan for spring components explicitly.
+ */
+
+/**
+ *  @EntityScan does not create beans,it is mainly used to scan you entity packages,in this example,spring
+ *  boot will scan for JPA entities under the package where OrgOperationRequest.class exists.
+ */
+// @EntityScan(basePackageClasses = OrgOperationRequest.class)
 @SpringBootApplication
 public class Example {
     public static void main(String[] args) throws Exception {

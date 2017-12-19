@@ -7,7 +7,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class MongoDBDatabaseCondition implements Condition{
     @Override
     public boolean matches(ConditionContext conditionContext, AnnotatedTypeMetadata annotatedTypeMetadata) {
-        String enabedDBType = conditionContext.getEnvironment().getProperty("app.dbType");
-        return ( enabedDBType != null && enabedDBType.equalsIgnoreCase("MONGODB"));
+        String enabledDBType = conditionContext.getEnvironment().getProperty("dbType");
+        return ( enabledDBType != null && enabledDBType.equalsIgnoreCase("MONGODB"));
     }
 }

@@ -10,7 +10,7 @@
     <select id="getExistingIds" resultType="java.lang.Integer">
         select userFid from mis_user_data_org_ref where orgFid=#{oldOrgFid} and userFid in
         <foreach collection="userIds" item="userId" open="(" separator="," close=")">
-            userId
+            #{userId}
         </foreach>
     </select>
 </mapper>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 // the RESTful controller simply returns the object and the object is written directly to the HTTP
 // response as JSON/XML
 @RestController
+@RequestMapping(path="/home")
 public class HomeController {
     @Autowired
     HomeService homeService;

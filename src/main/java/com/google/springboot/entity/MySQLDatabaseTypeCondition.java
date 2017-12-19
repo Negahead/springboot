@@ -8,7 +8,7 @@ public class MySQLDatabaseTypeCondition implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String enabledDBType = context.getEnvironment().getProperty("app.dbType");
+        String enabledDBType = context.getEnvironment().getProperty("dbType");
         return (enabledDBType != null && enabledDBType.equalsIgnoreCase("MYSQL"));
     }
 }

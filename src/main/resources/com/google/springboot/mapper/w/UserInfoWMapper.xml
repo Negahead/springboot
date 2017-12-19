@@ -5,7 +5,7 @@
     <update id="transferOrgCrew">
         update mis_user_data_org_ref set orgFid=#{orgFid},isCharge=0 where orgFid=#{oldOrgFid} and userFid in
         <foreach collection="userIds" item="userId" open="(" separator="," close=")">
-            userId
+            #{userId}
         </foreach>
     </update>
 </mapper>
