@@ -6,10 +6,12 @@
  */
 package com.google.springboot;
 
+import com.google.springboot.configuration.PropertyConfiguration;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.*;
 
 // The key difference between a traditional spring MVC controller and the RESTful com.google.springboot.controller.web com.google.springboot.controller.service contoller
@@ -20,11 +22,14 @@ import org.springframework.web.bind.annotation.*;
 // @EnableAutoConfiguration
 // @RequestMapping(path = "/home",method = RequestMethod.POST)
 /**
- * @ComponentScan
-   @SpringBootApplication,@SpringBootApplication is equivalent to using @Configuration,@EnableAutoConfiguration,@ComponentScan with their default attributes
-   @Configuration indicates that this class is a Spring configuration class.
-   @ComponentScan enables component scanning for Spring beans in the package in which the current class is defined
-   @EnableAutoConfiguration triggers Spring Boot's auto-configuration mechanisms
+ * '@ComponentScan
+   '@SpringBootApplication,@SpringBootApplication is equivalent to using @Configuration,@EnableAutoConfiguration,@ComponentScan with their default attributes
+   '@Configuration indicates that this class is a Spring configuration class.
+   '@ComponentScan enables component scanning for Spring beans in the package in which the current class is defined
+   '@EnableAutoConfiguration triggers Spring Boot's auto-configuration mechanisms,this annotation tells spring
+    boot to 'guess' how you will want to configure spring,based on the jar dependencies that you have
+    added,
+   #####
    this entry class will take care of scanning other Spring configuration classes in all the sub-packages;
  */
 
@@ -38,8 +43,29 @@ import org.springframework.web.bind.annotation.*;
  *  @EntityScan does not create beans,it is mainly used to scan you entity packages,in this example,spring
  *  boot will scan for JPA entities under the package where OrgOperationRequest.class exists.
  */
+
+/**
+ *  System properties are set on the Java command line using the -Dpropertyname=value syntax,they can alse
+ *  be added at runtime using System.setProperty(String key,String value),or via the various
+ *  System.getProperties().load() methods
+ *
+ *  Environment variables are set int the OS,e.g. in Linux export HOMT=/User/userName,unlike
+ *  properties,may not be set at runtime,System.getenv(String name)
+ *
+ */
+
+/**
+ * we've seen how to break up bean definitions into multiple @Configuration classes and how to reference those
+ * beans across @Configuration boundaries,These scenarios have required providing all @Configuration classes
+ * to the constructor of a JavaConfigApplicationContext,but what if @Configuration class logically imports the
+ * bean definitions defined by another,The @Import annotations provides just this kind of support.
+ */
 // @EntityScan(basePackageClasses = OrgOperationRequest.class)
 @SpringBootApplication
+/**
+ * Convenient way to quickly register ConfigurationProperties annotated beans with spring
+ */
+@EnableConfigurationProperties(PropertyConfiguration.class)
 public class Example {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Example.class,args);

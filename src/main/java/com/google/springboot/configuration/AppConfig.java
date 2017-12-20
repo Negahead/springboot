@@ -8,8 +8,10 @@ import com.google.springboot.interfaces.UserDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
+@Import(PersonBeanConfig.class)
 public class AppConfig {
     /**
      * MySQLDatabaseTypeCondition and MongoDBDatabaseCondition implements Condition class,
@@ -34,4 +36,6 @@ public class AppConfig {
     public UserDAO mongoUserDAO() {
         return new MongoUserDAO();
     }
+
+
 }
