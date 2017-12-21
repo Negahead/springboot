@@ -1,6 +1,7 @@
 package com.google.springboot.service;
 
 import com.google.springboot.entity.ResponseResult;
+import com.google.springboot.entity.beans.Person;
 import com.google.springboot.entity.enums.ErrorCodeEnum;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.entity.response.UserInfoResponse;
@@ -30,15 +31,19 @@ public class HomeService {
      *  find out the required bean to inject,@Resource will narrow down the search first by name then
      *  by type and finally by Qualifiers
      */
+//    @Autowired
+//    UserDAO userDAO;
+
     @Autowired
-    UserDAO userDAO;
+    Person person;
 
     public ResponseResult home() {
         try {
             Class.forName("com.google.springboot");
             return new ResponseResult<>("Hello World");
         } catch (ClassNotFoundException e) {
-            return new ResponseResult<>("class not found");
+            person.setName("will");
+            return new ResponseResult<>(person.getName());
         }
     }
 
@@ -47,7 +52,8 @@ public class HomeService {
         if(userInfoResponse != null) {
             return new ResponseResult<>(userInfoResponse);
         }
-        return new ResponseResult<>(userDAO.getAllUserNames());
+        //return new ResponseResult<>(userDAO.getAllUserNames());
+        return new ResponseResult<>("");
     }
 
     public ResponseResult transferOrgCrew(OrgOperationRequest request) {

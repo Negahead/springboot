@@ -8,12 +8,14 @@ import com.google.springboot.interfaces.UserDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * Annotating a class with the @Configuration annotation indicates that the class will be used by JavaConfig
  * as a source if bean definition.
  */
 @Configuration
+@Import(PersonBeanConfig.class)
 public class AppConfig {
     /**
      * MySQLDatabaseTypeCondition and MongoDBDatabaseCondition implements Condition class,
@@ -51,4 +53,6 @@ public class AppConfig {
     public UserDAO mongoUserDAO() {
         return new MongoUserDAO();
     }
+
+
 }
