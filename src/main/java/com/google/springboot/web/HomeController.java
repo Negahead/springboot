@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
-// The key difference between a traditional spring MVC controller and the RESTful contoller
+// The key difference between a traditional spring MVC controller and the RESTful controller
 // is the way the HTTP response body is created,while the traditional MVC controller relies on the View technology
 // the RESTful controller simply returns the object and the object is written directly to the HTTP
 // response as JSON/XML

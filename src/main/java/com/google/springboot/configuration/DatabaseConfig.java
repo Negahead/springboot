@@ -14,8 +14,22 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
-// @Configuration is also a @Component
+/**
+ * ' @Configuration is also a @Component
+ */
+
+
+/**
+ *  The JavaEE platform provides the Java Persistence API(JPA) specification,which is an Object Relational Mapping
+ *  framework,Hibernate and EclipseLink are the most popular JPA implementations.There are other popular persistence frameworks
+ *  such as Mybatis mad JOOQ,that are SQL forced.
+ *  Spring provides a nice abstraction on top of the JDBC API,using JdbcTemplate,and provides great transaction management capabilities using
+ *  annotation-based approach
+ */
 @Configuration
+/**
+ * Only interface with at least one method will be registered
+ */
 @MapperScan(basePackages = "com.google.springboot.mapper")
 public class DatabaseConfig {
 //    @Value("${spring.datasource.druid.url}")
@@ -36,7 +50,8 @@ public class DatabaseConfig {
     // one or more profiles.when you run the application,you can activate
     // -Dspring.profiles.active=DEV
     //@Profile("dev")
-    public DataSource devDataSource() {
+    //@Profile("!dev") : the component is activated only if "dev" profile is not active
+    public DruidDataSource devDataSource() {
         DruidDataSource druidDataSource = new DruidDataSource();
         druidDataSource.setDriverClassName(propertyConfiguration.getDriverClassName());
         druidDataSource.setUrl(propertyConfiguration.getUrl());

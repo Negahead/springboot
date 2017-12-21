@@ -1,9 +1,8 @@
 package com.google.springboot.configuration;
 
-import com.google.springboot.entity.impl.MongoDBDatabaseCondition;
-import com.google.springboot.entity.impl.MySQLDatabaseTypeCondition;
-import com.google.springboot.entity.impl.JdbcUserDAO;
-import com.google.springboot.entity.impl.MongoUserDAO;
+import com.google.springboot.entity.POJO.Mercedes;
+import com.google.springboot.entity.POJO.Tree;
+import com.google.springboot.entity.impl.*;
 import com.google.springboot.interfaces.UserDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -53,6 +52,25 @@ public class AppConfig {
     public UserDAO mongoUserDAO() {
         return new MongoUserDAO();
     }
+
+    @Bean
+    @Conditional(SomeClassPresentCondition.class)
+    public Tree getTree() {
+        Tree tree = new Tree();
+        tree.setHeight(3000);
+        tree.setName("European larch");
+        return tree;
+    }
+
+    @Bean
+    @Conditional(PropertyCondition.class)
+    public Mercedes getMercedes() {
+        Mercedes mercedes = new Mercedes();
+        mercedes.setName("Mercedes-Benz");
+        mercedes.setPrice(133455.6456);
+        return mercedes;
+    }
+
 
 
 }

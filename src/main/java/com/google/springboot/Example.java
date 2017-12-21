@@ -2,7 +2,7 @@
  * you should not put your java file in the "default package",the use of
  * "default package" is generally discouraged,since every class from every jar will be read
  * this is the Entry point class and will be used to bootstrap the whole application.
- * It is highly recommended that you put the main entry point class in the root package.if you don't you
+ * It is highly recommended that you put the main entry point class in the root package.
  */
 package com.google.springboot;
 
@@ -14,13 +14,6 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.web.bind.annotation.*;
 
-// The key difference between a traditional spring MVC controller and the RESTful com.google.springboot.controller.web com.google.springboot.controller.service contoller
-// is the way the HTTP response body is created,while the traditional MVC controller relies on the View technology
-// the RESTful com.google.springboot.controller.web com.google.springboot.controller.service controller simply returns the object and the object is written directly to the HTTP
-// response as JSON/XML
-// @RestController
-// @EnableAutoConfiguration
-// @RequestMapping(path = "/home",method = RequestMethod.POST)
 /**
  * '@ComponentScan
    '@SpringBootApplication,@SpringBootApplication is equivalent to using @Configuration,@EnableAutoConfiguration,@ComponentScan with their default attributes
@@ -40,16 +33,17 @@ import org.springframework.web.bind.annotation.*;
  */
 
 /**
- *  @EntityScan does not create beans,it is mainly used to scan you entity packages,in this example,spring
- *  boot will scan for JPA entities under the package where OrgOperationRequest.class exists.
+ *  '@EntityScan does not create beans,it is mainly used to scan you entity packages,in this example,spring
+ *  boot will scan for JPA entities under the package where OrgOperationRequest.class exists:
+ *    '@EntityScan(basePackageClasses = OrgOperationRequest.class)
  */
 
 /**
- *  System properties are set on the Java command line using the -Dpropertyname=value syntax,they can alse
+ *  System properties are set on the Java command line using the -Dpropertyname=value syntax,they can also
  *  be added at runtime using System.setProperty(String key,String value),or via the various
  *  System.getProperties().load() methods
  *
- *  Environment variables are set int the OS,e.g. in Linux export HOMT=/User/userName,unlike
+ *  Environment variables are set int the OS,e.g. in Linux export HOME=/User/userName,unlike
  *  properties,may not be set at runtime,System.getenv(String name)
  *
  */
@@ -65,7 +59,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * Convenient way to quickly register ConfigurationProperties annotated beans with spring
  */
-@EnableConfigurationProperties(PropertyConfiguration.class)
+//@EnableConfigurationProperties(PropertyConfiguration.class)
 public class Example {
     public static void main(String[] args) throws Exception {
         SpringApplication.run(Example.class,args);

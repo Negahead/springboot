@@ -1,5 +1,7 @@
 package com.google.springboot.service;
 
+import com.google.springboot.entity.POJO.Mercedes;
+import com.google.springboot.entity.POJO.Tree;
 import com.google.springboot.entity.ResponseResult;
 import com.google.springboot.entity.beans.Person;
 import com.google.springboot.entity.enums.ErrorCodeEnum;
@@ -22,12 +24,12 @@ public class HomeService {
     UserInfoWMapper userInfoWMapper;
 
     /**
-     *  Autowired is fundamentally about type-driven injection with optional semantic qualifiers,
+     *  '@Autowired is fundamentally about type-driven injection with optional semantic qualifiers,
      *  the bean's id(name) will be used as a fallback,this is the case when you use @Qualifier("beanName")
      *
-     *  @Inject @YourQualifier private Foo foo()
+     *  '@Inject @YourQualifier private Foo foo()
      *
-     *  @Resource is similar to @Autowired and @Inject,but the main difference is the execution paths token to
+     *  '@Resource is similar to @Autowired and @Inject,but the main difference is the execution paths token to
      *  find out the required bean to inject,@Resource will narrow down the search first by name then
      *  by type and finally by Qualifiers
      */
@@ -37,13 +39,19 @@ public class HomeService {
     @Autowired
     Person person;
 
+    @Autowired
+    Tree tree;
+
+    @Autowired
+    Mercedes mercedes;
+
     public ResponseResult home() {
         try {
             Class.forName("com.google.springboot");
             return new ResponseResult<>("Hello World");
         } catch (ClassNotFoundException e) {
             person.setName("will");
-            return new ResponseResult<>(person.getName());
+            return new ResponseResult<>(person.getName()+tree.getName()+mercedes.getName());
         }
     }
 
