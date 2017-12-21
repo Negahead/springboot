@@ -1,4 +1,4 @@
-package com.google.springboot.entity;
+package com.google.springboot.entity.impl;
 
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
