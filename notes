@@ -1,0 +1,80 @@
+Insert new Document:
+	post={"title":"My blog post","content":"here's my blog post","date":new Date()}
+	db.blog.insert(post);
+query document:
+	db.blog.find()
+update document:
+	post.comment=[]
+	db.blog.update({"title":"My blog post"},post)
+delete document:
+	db.blog.delete({title:"My blog post"})
+
+
+
+Data Types:
+	{"x":null"}
+	{"x":true}
+	number,default is 64-bit floating point numbers:
+	{"x":3.14}
+	or
+	{"x":NumberInt("3")}
+	{"x":NumberLong("3")}
+	string
+	{"x":"foobar"}
+	date
+	{"x":new Date()}
+	regular expression
+	{"x":/foobar/i}
+	array
+	{"x":[1,2,3,4,5]}
+	object id
+	{"x":new ObjectId()}
+
+
+
+Modifiers:
+	$set:set or create a new field
+	    db.foo.update({"name":"joe"},{"$inc":{"comments.0.vote":1}})  # index based
+	$unset: remove a field:
+		db.foo.update({"name":"joe"},{"$unset":{"favorite book":1}})
+		this will delete "favorite book" field
+	$inc:increment or decrement
+	$push:create or modify an array
+		db.foo.update({"name":"joe"},{"$push":{"favorite book":["book1","book2"]}})
+		db.foo.update({"name":"joe"},{"$push":{"favorite book":{"$each":["Pro git","MySQL Cookbook"]}}})
+		# only last 5 numbers,slice is always negative.
+		db.foo.update({"name":"joe"},{"$push":{"number":{"$each":[1,2,3,4,5,6,7,8,9,10],"$slice":-5}}})
+	$addToSet
+	    db.foo.update({"name":"joe"},{"$addToSet":{"number":100}})
+	$pop
+	    # pop out the last one
+	    db.foo.update({"name":"joe"},{"$pop":{"number":1}})
+	    # pop out the first one
+	    db.foo.update({"name":"joe"},{"$pop":{"number":-1}})
+	$pull: remove element base on specific criteria
+	$setOnInsert: only sets the value of a field when the document is being inserted,
+
+upsert
+    db.foo.update({"name":"joe"},{"$inc":1},true) # the third argument means this is an upsert query
+    db.foo.update({"rep":20},{"inc":{"rep":3}},true),is {"rep":20} does not exist and upsert in not set,
+    nothing will happen,but this will create another new document and "rep" is now 23
+
+update multiple Documents:
+    update will only update the first document,to modify all of the documents matching the criteria,you can pass true
+    as the fourth parameter to update.
+
+
+Query:
+    # you pass a second argument to find specifying the keys you want,> 0 is true,= 0 is false
+    db.foo.find({},{"name":1})
+
+    Query Conditionals
+    "$lt" <
+    "$lte" <=
+    "$gt" >
+    "$gte" >=
+    "$ne" !=
+    "$eq" ==
+    db.foo.find({"age":{"$gte":20,"$lte":30}})
+    db.foo.find({"registered":{"$gte":new Date(01/01/2017)}})
+    db.foo.findOne({"registered":{"$lte":new Date("2017-10-01")}})

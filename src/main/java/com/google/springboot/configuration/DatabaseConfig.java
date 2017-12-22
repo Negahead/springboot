@@ -28,7 +28,7 @@ import javax.sql.DataSource;
  */
 @Configuration
 /**
- * Only interface with at least one method will be registered
+ * Scan Mapper interface,Only interface with at least one method will be registered
  */
 @MapperScan(basePackages = "com.google.springboot.mapper")
 public class DatabaseConfig {

@@ -25,7 +25,7 @@ public class HomeService {
 
     /**
      *  '@Autowired is fundamentally about type-driven injection with optional semantic qualifiers,
-     *  the bean's id(name) will be used as a fallback,this is the case when you use @Qualifier("beanName")
+     *  the bean's id(name) will be used as a fallback,this is the case when you use @Qualifier("beanName")use
      *
      *  '@Inject @YourQualifier private Foo foo()
      *
