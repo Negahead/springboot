@@ -10,12 +10,22 @@ import com.google.springboot.entity.response.UserInfoResponse;
 import com.google.springboot.interfaces.UserDAO;
 import com.google.springboot.mapper.r.UserInfoRMapper;
 import com.google.springboot.mapper.w.UserInfoWMapper;
+import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+/**
+ * At a high level,Spring creates proxies for all the classes annotated with @Transactional,either on the
+ * class or on any of the methods.The proxy allows the framework to inject transactional logic before
+ * and after the method being invoked,mainly for starting and committing the transaction.
+ *
+ * only public methods should be annotated with @Transactional.
+ */
+@Transactional
 public class HomeService {
     @Autowired
     UserInfoRMapper userInfoRMapper;

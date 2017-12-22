@@ -12,6 +12,7 @@ import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -56,6 +57,7 @@ import org.springframework.web.bind.annotation.*;
  */
 // @EntityScan(basePackageClasses = OrgOperationRequest.class)
 @SpringBootApplication
+@EnableTransactionManagement
 /**
  * Convenient way to quickly register ConfigurationProperties annotated beans with spring
  */
