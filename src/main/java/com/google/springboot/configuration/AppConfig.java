@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
 
 /**
  * Annotating a class with the @Configuration annotation indicates that the class will be used by JavaConfig
- * as a source if bean definition.
+ * as a source of bean definition.
  */
 @Configuration
 @Import(PersonBeanConfig.class)
@@ -39,6 +39,18 @@ public class AppConfig {
      * behavior over the @Component annotation,it specifies intent better.
      *
      * '@Component' are used to auto-detect and auto-configure beans using classpath scanning,
+     *
+     */
+
+
+    /**
+     * ' @Bean(name="your bean name")
+     *
+     *
+     *   ====>
+     *
+     * ' @Autowire
+     * ' @Qualifier("your bean name")
      *
      */
     @Bean

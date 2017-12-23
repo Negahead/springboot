@@ -11,6 +11,14 @@ import org.springframework.web.bind.annotation.*;
 // is the way the HTTP response body is created,while the traditional MVC controller relies on the View technology
 // the RESTful controller simply returns the object and the object is written directly to the HTTP
 // response as JSON/XML
+
+/**
+ *  one thing about @ResponseBody: Spring has a list of HttpMessageConverters registered in the background,,the responsibility
+ *  of HttpMessageConverter is to convert the request body to a specific class and back to the response body again.depending
+ *  on a predefined mime type.
+ *
+ *  '@RestController = @Controller + @ResponseBody
+ */
 @RestController
 @RequestMapping(path="/home")
 public class HomeController {
@@ -37,6 +45,16 @@ public class HomeController {
      */
     public ResponseResult transferOrgCrew(@RequestBody OrgOperationRequest request) {
         return homeService.transferOrgCrew(request);
+    }
+
+    @RequestMapping("/mongodb")
+    public ResponseResult invokeMongoDB() {
+        return homeService.invokeMongoDB();
+    }
+
+    @RequestMapping("/testMongo")
+    public ResponseResult testMongo() {
+        return homeService.testMongo();
     }
 
 }
