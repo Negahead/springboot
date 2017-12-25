@@ -63,6 +63,8 @@ update multiple Documents:
     update will only update the first document,to modify all of the documents matching the criteria,you can pass true
     as the fourth parameter to update.
 
+    db.foo.update({"number":20},{"info":{"age":22,"country":"USA"}},{"multi":true}})
+
 
 Query:
     # The positional $ operator acts as a placeholder for the first match of the update query document.
