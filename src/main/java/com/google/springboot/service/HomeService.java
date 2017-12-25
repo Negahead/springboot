@@ -16,6 +16,9 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -67,6 +70,10 @@ public class HomeService {
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    @Qualifier("mongoClient")
+    MongoClient mongoClient;
+
     public ResponseResult home() {
         try {
             Class.forName("com.google.springboot");
@@ -107,7 +114,8 @@ public class HomeService {
     public ResponseResult testMongo() {
         /**
          * the class MongoTemplate us the central class of Spring's MongoDB support providing a rich set to interact
-         * with the database,the preferred wat to reference the operations on MongoTemplate instance is its interface
+         * with the database,this is the place to look for functionality such as incrementing counters or ad-hoc CRUD operations.
+         * the preferred way to reference the operations on MongoTemplate instance is its interface
          * MongoOperations.
          * or you can :
          *     MongoOperations mongoOps = new MongoTemplate(new SimpleMongoDbFactory(new MongoClient(),"will"));
@@ -115,9 +123,25 @@ public class HomeService {
          *  the difference between insert and save operations is that save operation will perform an insert if the object
          *  is not already present.
          */
-        MongoOperations mongoOPs = new MongoTemplate(new MongoClient("localhost"),"will");
-        mongoOPs.insert(new Customer("Emma",20));
-        Customer customer = mongoOPs.findOne(Query.query(where("name").is("Claire Foy")),Customer.class,"bar");
+        MongoOperations mongoOPs = new MongoTemplate(mongoClient,"will");
+        Customer customer = new Customer();
+        //mongoOPs.insert(new Customer("Emma",20));
+        if(mongoOPs.collectionExists("bar") && mongoOPs.collectionExists(Customer.class)) {
+            customer = mongoOPs.findOne(Query.query(where("name").is("Claire Foy")), Customer.class, "bar");
+            mongoOPs.count(Query.query(where("number").is(22)),Customer.class,"bar");
+        }
         return new ResponseResult<>(customer);
+    }
+
+    public ResponseResult findCollectionsByNumber(int number) {
+        /**
+         * Pages are zero indexed, thus providing 0 for page will return the first page.
+         */
+        Pageable pageable = new PageRequest(0,5);
+        List<Customer> customerList = customerRepository.findCustomerByNumber(number,pageable);
+        if(customerList != null) {
+            return new ResponseResult<>(customerList);
+        }
+        return new ResponseResult<>("");
     }
 }

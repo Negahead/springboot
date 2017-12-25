@@ -52,9 +52,13 @@ public class HomeController {
         return homeService.invokeMongoDB();
     }
 
-    @RequestMapping("/testMongo")
+    @RequestMapping(value = "/testMongo")
     public ResponseResult testMongo() {
         return homeService.testMongo();
     }
 
+    @RequestMapping(value = "/findCollectionsByNumber/{number}",method = RequestMethod.POST)
+    public ResponseResult findCollectionsByNumber(@PathVariable int number) {
+        return homeService.findCollectionsByNumber(number);
+    }
 }

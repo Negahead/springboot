@@ -58,6 +58,9 @@ public class Customer {
         this.number = number;
     }
 
+    public Customer() {
+    }
+
     @Override
     public String toString() {
         return "Customer{" +

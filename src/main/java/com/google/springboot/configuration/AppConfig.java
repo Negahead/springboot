@@ -4,6 +4,7 @@ import com.google.springboot.entity.POJO.Mercedes;
 import com.google.springboot.entity.POJO.Tree;
 import com.google.springboot.entity.impl.*;
 import com.google.springboot.interfaces.UserDAO;
+import com.mongodb.MongoClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -81,6 +82,11 @@ public class AppConfig {
         mercedes.setName("Mercedes-Benz");
         mercedes.setPrice(133455.6456);
         return mercedes;
+    }
+
+    @Bean(name = "mongoClient")
+    public MongoClient getMongoClient() {
+        return new MongoClient("localhost",27017);
     }
 
 
