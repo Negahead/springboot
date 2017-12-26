@@ -7,10 +7,44 @@
         select userId,userName,userPwd from mis_user_info where userId=104
     </select>
 
+    <!--
+        Ehcache implementation with Mybatis
+
+        high availability applications should perform a small amount of actions with the database,since the time
+        taken to complete a computation depends principally on the rate at which data can be obtained,then the
+        application should be able to temporarily store computations that may be reused again,caching may
+        be able to reduce the workload required,this means a caching mechanism should be created.
+
+    -->
     <select id="getExistingIds" resultType="java.lang.Integer">
         select userFid from mis_user_data_org_ref where orgFid=#{oldOrgFid} and userFid in
         <foreach collection="userIds" item="userId" open="(" separator="," close=")">
             #{userId}
         </foreach>
     </select>
+
+    <!--
+        attributes:
+            id:A unique identifier in this namespace that can be used to reference this statement.
+            parameterType:The fully qualified class name or alias for the parameter that will be passed into this statement.
+                          This attribute is optional because MyBatis can calculate the TypeHandler to use out of the actual
+                          parameter passed to the statement. Default is unset.
+            resultType:Use resultMap OR resultType, not both.
+            timeout:This sets the number of seconds the driver will wait for the database to return from a request, before throwing an exception
+    -->
+    <select id="mybatis" resultMap="mybatisResultMap" >
+        select userId,userName,userPwd,userRealName,userMobile,userCreatedOn,userSex,teacherType,subjectIds from mis_user_info join mis_teacher_info on userId=userFid
+        where userId=100001
+    </select>
+    <resultMap id="mybatisResultMap" type="com.google.springboot.entity.response.NestedClass" autoMapping="true">
+        <association property="teacherInfo" javaType="com.google.springboot.entity.response.TeacherInfo" column="userId" select="teacherInfoSelect"/>
+        <collection property="userRoleList" ofType="com.google.springboot.entity.response.UserRole" column="userId" select="userRoleListSelect" />
+    </resultMap>
+    <select id="teacherInfoSelect" resultType="com.google.springboot.entity.response.TeacherInfo">
+        select webViewName,personTag from mis_teacher_info where userFid=#{userId}
+    </select>
+    <select id="userRoleListSelect" resultType="com.google.springboot.entity.response.UserRole">
+        select roleId,roleName,roleShortName from mis_user_role join mis_user_role_ref on roleId=roleFid where userFid=#{userId}
+    </select>
+
 </mapper>

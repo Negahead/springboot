@@ -8,6 +8,7 @@ import com.google.springboot.entity.enums.ErrorCodeEnum;
 import com.google.springboot.entity.mongo.Customer;
 import com.google.springboot.entity.mongo.CustomerRepository;
 import com.google.springboot.entity.request.OrgOperationRequest;
+import com.google.springboot.entity.response.NestedClass;
 import com.google.springboot.entity.response.UserInfoResponse;
 import com.google.springboot.interfaces.UserDAO;
 import com.google.springboot.mapper.r.UserInfoRMapper;
@@ -17,6 +18,8 @@ import com.mongodb.MongoClient;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -25,11 +28,19 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 @Service
+/**
+ *  the @CacheConfig(cachenames="instruments") registers every method annotated with the spring
+ *  framework caching annotations with the specific cache.
+ */
+@CacheConfig(cacheNames = "instruments")
 /**
  * At a high level,Spring creates proxies for all the classes annotated with @Transactional,either on the
  * class or on any of the methods.The proxy allows the framework to inject transactional logic before
@@ -84,6 +95,11 @@ public class HomeService {
         }
     }
 
+    /**
+     * the result the the subsequent invocations will be cached.
+     * @return
+     */
+    @Cacheable()
     public ResponseResult getUserInfo() {
         UserInfoResponse userInfoResponse =  userInfoRMapper.getUserInfo();
         if(userInfoResponse != null) {
@@ -142,6 +158,29 @@ public class HomeService {
         if(customerList != null) {
             return new ResponseResult<>(customerList);
         }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult mybatis() {
+        NestedClass nestedClass = userInfoRMapper.mybatis();
+        if(nestedClass != null) {
+            return new ResponseResult<>(nestedClass);
+        }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult mybatisParameter() {
+        List<String> stringList = new ArrayList<>();
+        stringList.add("dopa");
+        stringList.add("faker");
+        stringList.add("rookie");
+        userInfoWMapper.mybatisParameter(1,stringList);
+
+        Map<String,Integer> playerMap = new HashMap<>();
+        playerMap.put("java",12);
+        playerMap.put("perl",20);
+        playerMap.put("python",9);
+        userInfoWMapper.HashMapParameter(playerMap);
         return new ResponseResult<>("");
     }
 }

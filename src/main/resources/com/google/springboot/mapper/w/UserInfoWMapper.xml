@@ -8,4 +8,25 @@
             #{userId}
         </foreach>
     </update>
+
+    <!--
+        parameterType : The fully qualified class name or alias for the parameter that will be passed into this statement.
+    -->
+    <insert id="mybatisParameter">
+        insert B (player,age) VALUES
+        -- index is 0,1,2
+        <foreach collection="stringList" open="(" separator="),(" close=")" item="item" index="index">
+            #{item},#{index}
+        </foreach>
+    </insert>
+
+    <insert id="HashMapParameter">
+        insert B (player,age) VALUES
+--         playerMap.keySet(),item is the key set "java","perl","python",index is 0,1,2
+--         but playerMap.entrySet() item is the value set 9,12,20
+--         index is "python","java","perl" when use playerMap.entrySet()
+        <foreach collection="playerMap.keySet()" open="(" separator="),(" close=")" item="item" index="index">
+            #{index},2
+        </foreach>
+    </insert>
 </mapper>

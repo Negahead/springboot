@@ -69,4 +69,14 @@ public class HomeController {
     public ResponseResult findCollectionsByNumber(@PathVariable int number) {
         return homeService.findCollectionsByNumber(number);
     }
+
+    @RequestMapping(value = "/mybatis")
+    public ResponseResult mybatis(){
+        return homeService.mybatis();
+    }
+
+    @RequestMapping("/mybatisParameter")
+    public ResponseResult mybatisParameter() {
+        return homeService.mybatisParameter();
+    }
 }
