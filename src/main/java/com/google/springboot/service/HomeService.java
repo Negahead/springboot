@@ -137,7 +137,7 @@ public class HomeService {
         /**
          * Pages are zero indexed, thus providing 0 for page will return the first page.
          */
-        Pageable pageable = new PageRequest(0,5);
+        Pageable pageable = new PageRequest(0,50);
         List<Customer> customerList = customerRepository.findCustomerByNumber(number,pageable);
         if(customerList != null) {
             return new ResponseResult<>(customerList);

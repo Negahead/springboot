@@ -3,6 +3,10 @@ package com.google.springboot.entity.mongo;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *  Spring Data MongoDB will map the class Customer into a collection called customer,if you want to
@@ -23,11 +27,19 @@ public class Customer {
      * that share the same names as the properties themselves.
      */
 
+    @Field("name")
     private String name;
     /**
      * if number in mongoDB is like [12,34],it will retrieve 12
      */
+
+    @Field("number")
     private int number;
+
+    /**
+     *  you can also use Map<String,String> info = new HashMap<>()
+     */
+    private Info info;
 
     public String getId() {
         return id;
@@ -68,5 +80,14 @@ public class Customer {
                 ", name='" + name + '\'' +
                 ", number=" + number +
                 '}';
+    }
+
+
+    public Info getInfo() {
+        return info;
+    }
+
+    public void setInfo(Info info) {
+        this.info = info;
     }
 }
