@@ -47,8 +47,16 @@ public class HomeController {
         return homeService.transferOrgCrew(request);
     }
 
-    @RequestMapping("/mongodb")
-    public ResponseResult invokeMongoDB() {
+    /**
+     * HTTP post request ,the values are sent in the request body,in the format that the content type specifies,
+     * Usually the content type is application/x-www-form-urlencoded,so the request body uses the same format as the query string:
+     *  parameter=value&also=another,non-alphanumeric characters are percent encoded.
+     * when you use a file upload in the form,you use the multipart/form-data encoding instead,which has a different format.
+     * @param operator
+     * @return
+     */
+    @RequestMapping(value = "/mongodb",method = RequestMethod.POST)
+    public ResponseResult invokeMongoDB(String operator) {
         return homeService.invokeMongoDB();
     }
 
