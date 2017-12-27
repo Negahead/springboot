@@ -13,6 +13,7 @@ import org.springframework.boot.autoconfigure.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,8 +59,13 @@ import org.springframework.web.bind.annotation.*;
  */
 // @EntityScan(basePackageClasses = OrgOperationRequest.class)
 @SpringBootApplication
+/**
+ * ' @EnableScheduling ensures that a background task executor is created,without it,nothing
+ *  gets scheduled
+ */
+@EnableScheduling
 @EnableTransactionManagement
-@EnableCaching
+//@EnableCaching
 /**
  * Convenient way to quickly register ConfigurationProperties annotated beans with spring
  */
