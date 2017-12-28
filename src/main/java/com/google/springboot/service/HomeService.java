@@ -40,7 +40,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
  *  the @CacheConfig(cachenames="instruments") registers every method annotated with the spring
  *  framework caching annotations with the specific cache.
  */
-@CacheConfig(cacheNames = "instruments")
+//@CacheConfig(cacheNames = "instruments")
 /**
  * At a high level,Spring creates proxies for all the classes annotated with @Transactional,either on the
  * class or on any of the methods.The proxy allows the framework to inject transactional logic before
@@ -99,7 +99,7 @@ public class HomeService {
      * the result the the subsequent invocations will be cached.
      * @return
      */
-    @Cacheable()
+    //@Cacheable()
     public ResponseResult getUserInfo() {
         UserInfoResponse userInfoResponse =  userInfoRMapper.getUserInfo();
         if(userInfoResponse != null) {

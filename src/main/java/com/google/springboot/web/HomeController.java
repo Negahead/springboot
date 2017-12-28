@@ -3,8 +3,13 @@ package com.google.springboot.web;
 import com.google.springboot.entity.ResponseResult;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.service.HomeService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 // The key difference between a traditional spring MVC controller and the RESTful controller
@@ -22,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path="/home")
 public class HomeController {
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
     @Autowired
     HomeService homeService;
 
@@ -80,4 +87,27 @@ public class HomeController {
         return homeService.mybatisParameter();
     }
 
+
+    /**
+     *          method annotated with @Scheduled are:
+     *              a method should have void return type;
+     *              a method should not accept any parameters
+     *
+     *          scheduled task,all in milliseconds,1/1000 seconds
+     *          fixedRate:specifies the interval between method invocations measured from the start
+     *                    time of each invocation,the beginning of the task execution doesn't wait for the completion
+     *                    of the previous execution,this option should be used when each execution of task is independent.
+     *          fixedDelay: which specifies the interval between invocations measured from the end of the last invocation and the start of the next.
+     *                      the task always waits until the previous one is finished.
+     *          initialDelay:number of milliseconds to delay before the first execution
+     *
+     *
+     *          Hard coding these schedules is simple,but usually,you need to be able to control the schedule without
+     *          re-compiling and re-deploying the entire app,so we make use of Spring Expressions to externalize
+     *          the configuration of the tasks and store these in properties files.
+     */
+    @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}")
+    public void reportCurrentTime(){
+        System.out.println("the time is now"+dateFormat.format(new Date()));
+    }
 }
