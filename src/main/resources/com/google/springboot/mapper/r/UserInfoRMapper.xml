@@ -34,7 +34,7 @@
     -->
     <select id="mybatis" resultMap="mybatisResultMap" >
         select userId,userName,userPwd,userRealName,userMobile,userCreatedOn,userSex,teacherType,subjectIds from mis_user_info join mis_teacher_info on userId=userFid
-        where userId=100001
+        where userId=100767788978001
     </select>
     <resultMap id="mybatisResultMap" type="com.google.springboot.entity.response.NestedClass" autoMapping="true">
         <association property="teacherInfo" javaType="com.google.springboot.entity.response.TeacherInfo" column="userId" select="teacherInfoSelect"/>
@@ -45,6 +45,18 @@
     </select>
     <select id="userRoleListSelect" resultType="com.google.springboot.entity.response.UserRole">
         select roleId,roleName,roleShortName from mis_user_role join mis_user_role_ref on roleId=roleFid where userFid=#{userId}
+    </select>
+
+
+    <select id="mapResult" resultType="java.util.Map" parameterType="java.util.Map">
+        select
+            <if test="memo != null and memo != '' ">
+                (select type from A where id=#{memo}) type,
+            </if>
+            <if test="logOper != null and logOper != ''">
+                logOper
+            </if>
+        from will.mis_oper_log where logId=6
     </select>
 
 </mapper>

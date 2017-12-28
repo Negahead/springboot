@@ -29,4 +29,6 @@
             #{index},2
         </foreach>
     </insert>
+
+
 </mapper>

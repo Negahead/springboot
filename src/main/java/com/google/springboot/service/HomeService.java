@@ -181,6 +181,11 @@ public class HomeService {
         playerMap.put("perl",20);
         playerMap.put("python",9);
         userInfoWMapper.HashMapParameter(playerMap);
+
+        Map<String,Object> map1 = new HashMap<>();
+        map1.put("memo",1);
+        map1.put("logOper","logOper");
+        Map<String,String> resultMap = userInfoRMapper.mapResult(map1);
         return new ResponseResult<>("");
     }
 }

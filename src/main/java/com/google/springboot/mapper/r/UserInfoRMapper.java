@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserInfoRMapper {
@@ -15,4 +16,5 @@ public interface UserInfoRMapper {
 
     NestedClass mybatis();
 
+    Map<String,String> mapResult(Map<String, Object> map1);
 }
