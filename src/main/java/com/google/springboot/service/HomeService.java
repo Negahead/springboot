@@ -15,6 +15,8 @@ import com.google.springboot.mapper.r.UserInfoRMapper;
 import com.google.springboot.mapper.w.UserInfoWMapper;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -211,6 +213,34 @@ public class HomeService {
             file.transferTo(new File("/home/will/Desktop/copy"));
         } catch (IOException e) {
             System.out.println(e.getMessage());
+        }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult poi() {
+        try {
+            Workbook workbook = new XSSFWorkbook("/home/will/poi.xlsx");
+            Sheet sheet0 = workbook.getSheetAt(0);
+            for(Row row : sheet0) {
+                for(Cell cell : row) {
+//                    switch (cell.getCellTypeEnum()) {
+//                        case STRING:
+//                            System.out.printf("%20s",cell.getStringCellValue());
+//                        case NUMERIC:
+//                            System.out.printf("%20s",cell.getNumericCellValue());
+//                        case BLANK:
+//                            System.out.printf("%20s","blank value");
+//                        case BOOLEAN:
+//                            System.out.printf("%20s",cell.getBooleanCellValue());
+//                            default:
+//                                System.out.printf("%20s","default");
+//                    }
+                    System.out.printf("%20s",cell.getStringCellValue());
+                }
+                System.out.println();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return new ResponseResult<>("");
     }

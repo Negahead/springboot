@@ -122,4 +122,9 @@ public class HomeController {
     public ResponseResult uploadFile(@RequestParam("file") MultipartFile file) {
         return homeService.uploadFile(file);
     }
+
+    @RequestMapping(path = "/poi")
+    public ResponseResult poi() {
+        return homeService.poi();
+    }
 }
