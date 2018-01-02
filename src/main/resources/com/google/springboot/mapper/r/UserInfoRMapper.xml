@@ -59,4 +59,8 @@
         from will.mis_oper_log where logId=6
     </select>
 
+    <select id="getMySQLVersion" resultType="java.util.Map">
+        call show_part_of_day();
+    </select>
+
 </mapper>

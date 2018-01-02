@@ -27,7 +27,11 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -186,6 +190,28 @@ public class HomeService {
         map1.put("memo",1);
         map1.put("logOper","logOper");
         Map<String,String> resultMap = userInfoRMapper.mapResult(map1);
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult invokeMySQLProcedure() {
+        Map<String,Object> version = userInfoRMapper.getMySQLVersion();
+        if(version != null) {
+            return new ResponseResult<>(version);
+        }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult uploadFile(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        System.out.println("original file name is ");
+        System.out.println(originalFilename);
+        System.out.println("file content type is " + file.getContentType());
+        System.out.println(file.getName());
+        try {
+            file.transferTo(new File("/home/will/Desktop/copy"));
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
         return new ResponseResult<>("");
     }
 }

@@ -190,6 +190,22 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+
+        <!--
+            poi support
+        -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.16</version>
+        </dependency>
+
         <!--
             provide additional development-time features,applications that use spring-boot-devtools will automatically
             restart whenever files ON THE CLASSPATH changes.As DevTools monitors classpath resource,the only way to trigger

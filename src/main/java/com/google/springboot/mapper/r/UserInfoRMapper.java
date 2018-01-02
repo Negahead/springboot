@@ -17,4 +17,6 @@ public interface UserInfoRMapper {
     NestedClass mybatis();
 
     Map<String,String> mapResult(Map<String, Object> map1);
+
+    Map<String,Object> getMySQLVersion();
 }

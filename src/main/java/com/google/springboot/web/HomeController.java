@@ -3,10 +3,12 @@ package com.google.springboot.web;
 import com.google.springboot.entity.ResponseResult;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.service.HomeService;
+import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -109,5 +111,15 @@ public class HomeController {
     @Scheduled(fixedRateString = "${fixedDelay.in.milliseconds}")
     public void reportCurrentTime(){
         System.out.println("the time is now"+dateFormat.format(new Date()));
+    }
+
+    @RequestMapping("/invokeMySQLProcedure")
+    public ResponseResult invokeMySQLProcedure() {
+        return homeService.invokeMySQLProcedure();
+    }
+
+    @RequestMapping(path = "/uploadFile",method = RequestMethod.POST)
+    public ResponseResult uploadFile(@RequestParam("file") MultipartFile file) {
+        return homeService.uploadFile(file);
     }
 }

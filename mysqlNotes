@@ -1,0 +1,143 @@
+create PROCEDURE show_version()
+        select version() 'MySQL version';
+call show_version();
+
+# delimiter $$;
+# MySQL permits stored procedures(but not stored functions) to contain SQL transaction statements such as commit.
+create PROCEDURE show_part_of_day()
+        # each statement within a compound statement must be terminated by a ; character.
+        BEGIN
+                # the declare statement is used to define various items local to a program,
+                # It is permitted only inside a BEGIN...END compound statement and must be at
+                # its start,before any other statement.
+
+                # TEXT values are treated as nonbinary strings(character string,BOLB values are treated as binary strings),they have a character
+                # set other than binary,and values are sorted and compared based on the collation of the character set.
+                declare cur_time,day_part TEXT;
+                # set:
+                #       user defined variable: set @variable_name = expr, or select @variable_name := expr;
+                #                              set GLOBAL global_variable = 100; or set SESSION session_variable = 1000,default is session scope
+                #       set local variables in stored object,as it is in this example.
+                set cur_time = current_time();
+                if cur_time < '12:00:00' THEN
+                        set day_part = 'morning';
+                ELSEIF cur_time > '12:00:00' THEN
+                        set day_part = 'after noon or night';
+                ELSE
+                        set day_part = 'noon';
+                END IF;
+                SELECT cur_time,day_part;
+        END;
+# $$
+# delimiter $$;
+
+# IN,OUT,INOUT only used in procedures.
+# An IN parameter passes a value into a procedure. The procedure might modify the value, but the modification is not visible to the caller when the
+# procedure returns. An OUT parameter passes a value from the procedure back to the caller. Its initial value is NULL within the procedure, and its value is
+# visible to the caller when the procedure returns. An INOUT parameter is initialized by the caller, can be modified by the procedure, and any change
+# made by the procedure is visible to the caller when the procedure returns.
+#
+# each parameter is an IN parameter by default.
+# A procedure does not return a value the way a function does,but it can assign values to those parameters so that the user defined variables
+# have the desired values when the procedure returns.
+create PROCEDURE simpleproc(OUT param1 int)
+        BEGIN
+                # select ... into var_list,selects column values and store them into variables.
+                select count(1) into param1 from A;
+        END;
+
+# routine characteristics that provide  information about the nature of the data use by thr routine.
+# CONTAINS SQL,indicates that the routine does not contain statements that read or write data;
+# READS SQL DATA indicates that the routine contains statements that read data,but not statement that write data;
+# MODIFIES SQL DATA indicates that the routine contains statement that may write data;
+# NO SQL indicates that the routine contains no SQL statements.
+create FUNCTION average_age(groupId int) RETURNS float READS SQL DATA
+        BEGIN
+                DECLARE avg_age FLOAT;
+                if groupId is NULL THEN
+                        set avg_age = (select avg(age) from A);
+                ELSE
+                        set avg_age = (select avg(age) from A where `group`=groupId);
+                END IF;
+                RETURN avg_age;
+        END;
+
+# DECIMAL(M,D),M is the maximum number of digits(the precision),range:1-65,D is the number of digits to the right of the decimal point(the scale)
+# CHAR and VARCHAR with a length indicates the maximum number of characters you want to store, data type column is fixed when you declare it,length
+# can be 0-255,when CHAR values are store,they are right-padded with spaces to the specific length,then CHAR values are retrieved,trailing spaces
+# are removed by default.
+# in contrast to CHAR,VARCHAR(0-65535) values are stored as 1-byte or 2-byte length prefix plus data,VARCHAR values are not padded when they are
+# stored,trailing spaces are retained when values are stored and retrieved.
+create FUNCTION sale_tax_rate(fid int) RETURNS DECIMAL(3,2) READS SQL DATA
+  BEGIN
+    DECLARE rate DECIMAL(3,2);
+    # declare CONTINUE|EXIT|UNDO HANDLER FOR mysql_error_code|SQLSTATE sqlstate_value|NOT FOUND|SQLEXCEPTION|condition_name statement
+    # specifies a handler that deals with one or more conditions,if one of the condition occurs,the specified statement executes,
+    # statement can be a simple statement or a compound statement using BEGIN and END.
+
+    # CONTINUE: Execution of the current program continues.
+    # EXIT: Execution terminates for the BEGIN ... END compound statement in which the handler is declared.
+    # error code and message go to https://dev.mysql.com/doc/refman/5.7/en/error-messages-server.html
+    DECLARE CONTINUE HANDLER FOR NOT FOUND set rate=0;
+    select tax_rate into rate from A where id=fid;
+    RETURN rate;
+  END;
+
+select sale_tax_rate(300);
+
+insert into A (`group`, age, type, nullvalue, memo, bitValue, tax_rate)
+    VALUES (1,23,'dopa','null','memo',1,0.54);
+
+# the primary key determines the physica layout of rows in the data file.
+# you can create all indexes on a table at the time the table itself is created
+# CREATE INDEX enables you to add indexed to existing tables.
+# create index,index are used to find rows with specific column values quickly.
+
+# create [UNIQUE|FULLTEXT|SPATIAL|] INDEX index_name [USING BTREE|HASH] ON table_name (col_name [(length) | [ASC|DESC]],...)
+
+# To retrieve rows from other tables when performing joins. MySQL can use indexes on columns more efficiently if they are declared as the same
+# type and size.A column list of the form(col1,col2,...) creates a multiple-column index.
+
+# B-TREE Index:
+#   A B-tree index can be used for column comparisons in expressions that use the =, >, >=, <, <=, or BETWEEN operators.
+#   The index also can be used for LIKE comparisons if the argument to LIKE is a constant string that does not start with a wildcard character.
+# HASH Index:
+#   used only for equality comparisons that use the = or <=> operators (but are very fast)
+#   The optimizer cannot use a hash index to speed up ORDER BY operations.
+create UNIQUE INDEX A_id_uindex on A (id);
+
+create table expdata
+(
+  id INT unsigned not null auto_increment PRIMARY KEY,
+  value FLOAT,
+  log10_value float,
+  index(value),
+  index(log10_value)
+);
+
+SELECT * from expdata;
+drop TRIGGER if EXISTS tg_expdata;
+# there is only NEW in before insert,only OLD in before delete,both NEW and DELETE in update.
+create TRIGGER tg_expdata BEFORE INSERT on expdata FOR EACH ROW set NEW.log10_value=log10(NEW.value);
+insert into expdata (value) VALUES (10),(.1),(.01);
+create TRIGGER tg_a_expdata AFTER INSERT on expdata FOR EACH ROW set log10_value=log10(NEW.value);
+
+
+# trigger:
+# create TRIGGER trigger_name BEFORE|AFTER INSERT|UPDATE|DELETE on tbl_name FOR EACH ROW [FOLLOWS|PRECEDES other_trigger_name] trigger_body
+# it is possible to define multiple triggers for a given table that have the same trigger event and action time.
+# By default, triggers that have the same trigger event and action time activate in the order they were created.
+
+
+# event:
+# create EVENT event_name ON SCHEDULE schedule DO event_body
+# schedule : AT timestamp [+ INTERVAL interval]... | EVERY interval [STARTS timestamp [ + INTERVAL interval] [ ENDS timestamp [ + INTERVAL interval] ]
+
+
+# cursor:
+# DECLARE cursor_name CURSOR FOR select_statement,the select statement cannot have an into clause.
+# OPEN cursor_name
+# FETCH [[NEXT] FROM] cursor_name INTO var_name [, var_name] ...
+# CLOSE cur1;
+
+DECLARE cursor_a CURSOR FOR select * from A;
