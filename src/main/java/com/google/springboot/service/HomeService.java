@@ -7,6 +7,8 @@ import com.google.springboot.entity.beans.Person;
 import com.google.springboot.entity.enums.ErrorCodeEnum;
 import com.google.springboot.entity.mongo.Customer;
 import com.google.springboot.entity.mongo.CustomerRepository;
+import com.google.springboot.entity.redis.Movie;
+import com.google.springboot.entity.redis.RedisRepository;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.entity.response.NestedClass;
 import com.google.springboot.entity.response.UserInfoResponse;
@@ -27,6 +29,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -90,6 +94,13 @@ public class HomeService {
     @Autowired
     @Qualifier("mongoClient")
     MongoClient mongoClient;
+
+    @Autowired
+    RedisRepository redisRepository;
+
+    @Autowired
+    RedisTemplate<String,Object> redisTemplate;
+
 
     public ResponseResult home() {
         try {
@@ -241,6 +252,29 @@ public class HomeService {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult redisNewHash(String id, String name) {
+        Movie movie = new Movie(id,name);
+        redisRepository.add(movie);
+        return new ResponseResult<>("OK");
+    }
+
+    public ResponseResult redisHashValue(String id) {
+        String movie = redisRepository.findMovie(id);
+        if(movie != null) {
+            return new ResponseResult<>(movie);
+        }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult redisList() {
+        ListOperations<String, Object> listOps = redisTemplate.opsForList();
+        List<Object> mylist = listOps.range("mylist", 0, -1);
+        if(mylist != null) {
+            return new ResponseResult<>(mylist);
         }
         return new ResponseResult<>("");
     }

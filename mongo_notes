@@ -12,7 +12,7 @@ delete document:
 
 
 Data Types:
-	{"x":null"}
+	{"x":null}
 	{"x":true}
 	number,default is 64-bit floating point numbers:
 	{"x":3.14}
@@ -40,14 +40,31 @@ Modifiers:
 		this will delete "favorite book" field
 	$inc:increment or decrement
 	$push:create or modify an array
+	    # this will push the object into it as a whole
 		db.foo.update({"name":"joe"},{"$push":{"favorite book":["book1","book2"]}})
+		# push as single,namely each:
 		db.foo.update({"name":"joe"},{"$push":{"favorite book":{"$each":["Pro git","MySQL Cookbook"]}}})
 		# only last 5 numbers,slice is always negative.
 		db.foo.update({"name":"joe"},{"$push":{"number":{"$each":[1,2,3,4,5,6,7,8,9,10],"$slice":-5}}})
 	$addToSet
-	    db.foo.update({"name":"joe"},{"$addToSet":{"number":100}})
+	    # add to set do not guarantee a particular ordering of elements in the modified set
+	    # if the field is absent,$addToSet will creates the array field
+	    # if the field is not an array,operation will fail
+	    # if the value is an array,$addToSet will appends the whole array as a single element.you can use $each
+	    db.foo.update({"name":"joe"},{"$addToSet":{"number":[100,101]}})
+	$rename
+	    # rename a field name,if the field does not exist,do nothing
+	    db.foo.update("name":"joe"},{"$rename":{"new field":"new_field","number":"my_number"}})
+	    db.foo.update({"name":"joe"},{"$rename":{"country.name":"country.country_name"}})
+
+
+	# difference between addToSet and push:
+	    #addToSet do not add the item to the given field if it already contains it,on the other hand,$push
+	    will add the given object to the field whether it exists or not!
+
 	$pop
-	    # pop out the last one
+	    # $pop operation will fail if the field is not an array type
+	    # pop out the last one,old filed is changed
 	    db.foo.update({"name":"joe"},{"$pop":{"number":1}})
 	    # pop out the first one
 	    db.foo.update({"name":"joe"},{"$pop":{"number":-1}})
@@ -78,19 +95,25 @@ Query:
     "$gte" >=
     "$ne" !=
     "$eq" ==
+    "$in":selects the documents where the value of a field equals any value in the specified array
+        {field:{"$in":[value1,value2,...valueN]}}
+    "$nin":the opposite of $in
     db.foo.find({"age":{"$gte":20,"$lte":30}})
     db.foo.find({"registered":{"$gte":new Date(01/01/2017)}})
     db.foo.findOne({"registered":{"$lte":new Date("2017-10-01")}})
 
-    $in
-        db.foo.findOne({"number":{"$in":[7,9]}})
-    $nin
-        the opposite of $in
+    $exist:match documents whether field exists or not based on boolean value
+        { field: { $exists: <boolean> } }
+    $and:
+        {"$and":[{expression1},{expression2},..,]}
     $or
+        { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
         db.foo.find({"$in":[{"number":{"$in":[7,9}},{"isMarried":"yes"}]})
     $mod
         db.foo.find({"number":{"$mod":[2,1]}})
     $not
+        { field: { $not: { <operator-expression> } } }
+        {field:{"$not":{expression}}},include those document that do not contains the field,can not apply to regexp
         can be applied on any other criteria
         db.foo.find({"number":{"$not":{"mod":[2,1]}}})
     db.users.find({"age" : {"$lt" : 30, "$gt" : 20}})
