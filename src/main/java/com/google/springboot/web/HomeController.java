@@ -10,6 +10,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,7 +37,7 @@ public class HomeController {
     HomeService homeService;
 
     @GetMapping("/index")
-    public ResponseResult home() {
+    public ResponseResult home(@RequestHeader("user-agent") String userAgent,@RequestHeader("X-AUTH-TOKEN") String token) {
         return homeService.home();
     }
 
@@ -65,7 +67,7 @@ public class HomeController {
      * @return
      */
     @RequestMapping(value = "/mongodb",method = RequestMethod.POST)
-    public ResponseResult invokeMongoDB(String operator) {
+    public ResponseResult invokeMongoDB(String operator,int age) {
         return homeService.invokeMongoDB();
     }
 
@@ -126,5 +128,29 @@ public class HomeController {
     @RequestMapping(path = "/poi")
     public ResponseResult poi() {
         return homeService.poi();
+    }
+
+    @RequestMapping(path = "/redisNewHash")
+    public ResponseResult redisNewHash(@RequestParam("key") String id,@RequestParam("value") String name) {
+        return homeService.redisNewHash(id,name);
+    }
+
+    @RequestMapping(path = "/redisHashValue")
+    public ResponseResult redisHashValue(@RequestParam("key") String id) {
+        return homeService.redisHashValue(id);
+    }
+
+    @RequestMapping(path = "/redisList")
+    public ResponseResult redisList(@CookieValue("cookie1") String cookie){
+        return homeService.redisList();
+    }
+
+    @RequestMapping(path = "/cookie")
+    public ResponseResult cookie(@CookieValue("cookie1") String cookie1, HttpServletResponse response) {
+        Cookie cookie = new Cookie("cookie1",cookie1);
+        cookie.setPath("/home");
+        //cookie.setMaxAge(20);
+        response.addCookie(cookie);
+        return new ResponseResult<>("");
     }
 }
