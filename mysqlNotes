@@ -11,7 +11,7 @@ create PROCEDURE show_part_of_day()
                 # It is permitted only inside a BEGIN...END compound statement and must be at
                 # its start,before any other statement.
 
-                # TEXT values are treated as nonbinary strings(character string,BOLB values are treated as binary strings),they have a character
+                # TEXT values are treated as non-binary strings(character string,BLOB values are treated as binary strings),they have a character
                 # set other than binary,and values are sorted and compared based on the collation of the character set.
                 declare cur_time,day_part TEXT;
                 # set:
@@ -63,7 +63,7 @@ create FUNCTION average_age(groupId int) RETURNS float READS SQL DATA
         END;
 
 # DECIMAL(M,D),M is the maximum number of digits(the precision),range:1-65,D is the number of digits to the right of the decimal point(the scale)
-# CHAR and VARCHAR with a length indicates the maximum number of characters you want to store, data type column is fixed when you declare it,length
+# CHAR and VARCHAR with a length indicates the maximum number of characters you want to store, CHAR data type column is fixed when you declare it,length
 # can be 0-255,when CHAR values are store,they are right-padded with spaces to the specific length,then CHAR values are retrieved,trailing spaces
 # are removed by default.
 # in contrast to CHAR,VARCHAR(0-65535) values are stored as 1-byte or 2-byte length prefix plus data,VARCHAR values are not padded when they are
@@ -88,7 +88,7 @@ select sale_tax_rate(300);
 insert into A (`group`, age, type, nullvalue, memo, bitValue, tax_rate)
     VALUES (1,23,'dopa','null','memo',1,0.54);
 
-# the primary key determines the physica layout of rows in the data file.
+# the primary key determines the physical layout of rows in the data file.
 # you can create all indexes on a table at the time the table itself is created
 # CREATE INDEX enables you to add indexed to existing tables.
 # create index,index are used to find rows with specific column values quickly.
