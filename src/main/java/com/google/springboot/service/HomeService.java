@@ -29,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -263,9 +264,17 @@ public class HomeService {
     }
 
     public ResponseResult redisHashValue(String id) {
-        String movie = redisRepository.findMovie(id);
-        if(movie != null) {
-            return new ResponseResult<>(movie);
+        /**
+         * set the serializer both to get the correct answer, BOTH!!!!!!!!!!!!!!!!!!!!!!!!
+         * template.setHashKeySerializer(new StringRedisSerializer());
+         * template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+         */
+        HashOperations<String, String, Object> hashOps = redisTemplate.opsForHash();
+        Integer o = (Integer)hashOps.get("myhash", "Clair Foy");
+        hashOps.put("myhash","Conan",45);
+        Map<String, Object> entries = hashOps.entries("myhash");
+        if(entries != null) {
+            return new ResponseResult<>(entries);
         }
         return new ResponseResult<>("");
     }
@@ -275,6 +284,46 @@ public class HomeService {
         List<Object> mylist = listOps.range("mylist", 0, -1);
         if(mylist != null) {
             return new ResponseResult<>(mylist);
+        }
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult redisListOps(String param) {
+        List<String> cities = new ArrayList<>();
+        cities.add("New York");
+        cities.add("London");
+        cities.add("Sydney");
+
+        Map<String,Integer> actors = new HashMap<>();
+        actors.put("Tom Hardy",45);
+        actors.put("Clair Foy",26);
+        /**
+         * template.setKeySerializer(new StringRedisSerializer());
+         * template.setValueSerializer(new StringRedisSerializer());
+         * those two serializer will run smoothly with string.
+         */
+        ListOperations<String, Object> listOps = redisTemplate.opsForList();
+        listOps.set("mylist",0,param);
+        /**
+         * template.setValueSerializer(new StringRedisSerializer());,this will fail,error is "you can't cast List to String"
+         * but,you you change to template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+         * the saved value is changed to "\"faker\"","[\"New York\",\"London\",\"Sydney\"]"
+         * if you retrieve it however,it is returned as ArrayList,and "faker"
+         */
+        listOps.set("mylist",1,cities);
+
+        /**
+         * you can not set map
+         */
+//        listOps.set("mylist",2,actors);
+        return new ResponseResult<>("");
+    }
+
+    public ResponseResult retrieveRedisListByIndex(int index) {
+        ListOperations<String, Object> listOps = redisTemplate.opsForList();
+        Object result = listOps.index("mylist", index);
+        if(result != null) {
+            return new ResponseResult<>(result);
         }
         return new ResponseResult<>("");
     }

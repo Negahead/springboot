@@ -3,6 +3,7 @@ package com.google.springboot.web;
 import com.google.springboot.entity.ResponseResult;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.service.HomeService;
+import org.apache.ibatis.annotations.Param;
 import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,9 +141,18 @@ public class HomeController {
         return homeService.redisHashValue(id);
     }
 
+    @RequestMapping(path = "/redisListOps")
+    public ResponseResult redisListOps(@RequestParam("param") String param) {
+        return homeService.redisListOps(param);
+    }
+
     @RequestMapping(path = "/redisList")
     public ResponseResult redisList(@CookieValue("cookie1") String cookie){
         return homeService.redisList();
+    }
+    @RequestMapping(path = "/retrieveRedisListByIndex",method = RequestMethod.POST)
+    public ResponseResult retrieveRedisListByIndex(@Param("index") int index) {
+        return homeService.retrieveRedisListByIndex(index);
     }
 
     @RequestMapping(path = "/cookie")

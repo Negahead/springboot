@@ -1,0 +1,19 @@
+KEYS pattern
+    return all keys matching pattern
+DEL key[ key...]
+    remove the specified keys
+EXISTS key [key ...]
+    Returns if key exists.1 if the key exists.0 if the key does not exist.
+TYPE key
+    Returns the string representation of the type of the value stored at key.
+     string, list, set, zset and hash
+EXPIRE key seconds
+    Set a timeout on key. After the timeout has expired, the key will automatically be deleted.
+TTL key
+    Returns the remaining time to live of a key that has a timeout.
+    The command returns -2 if the key does not exist.
+    The command returns -1 if the key exists but has no associated expire.
+PERSIST key
+    Remove the existing timeout on key
+RENAME key newkey
+    Renames key to newkey.executes an implicit DEL operation

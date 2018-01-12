@@ -64,7 +64,7 @@ Modifiers:
 
 	$pop
 	    # $pop operation will fail if the field is not an array type
-	    # pop out the last one,old filed is changed
+	    # pop out the last one,old field is changed
 	    db.foo.update({"name":"joe"},{"$pop":{"number":1}})
 	    # pop out the first one
 	    db.foo.update({"name":"joe"},{"$pop":{"number":-1}})
@@ -115,7 +115,7 @@ Query:
         { field: { $not: { <operator-expression> } } }
         {field:{"$not":{expression}}},include those document that do not contains the field,can not apply to regexp
         can be applied on any other criteria
-        db.foo.find({"number":{"$not":{"mod":[2,1]}}})
+        db.foo.find({"number":{"$not":{"$mod":[2,1]}}})
     db.users.find({"age" : {"$lt" : 30, "$gt" : 20}})
     db.users.find({"$and" : [{"x" : {"$lt" : 1}}, {"x" : 4}]})
 
