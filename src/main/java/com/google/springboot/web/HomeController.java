@@ -147,11 +147,11 @@ public class HomeController {
     }
 
     @RequestMapping(path = "/redisList")
-    public ResponseResult redisList(@CookieValue("cookie1") String cookie){
+    public ResponseResult redisList(){
         return homeService.redisList();
     }
     @RequestMapping(path = "/retrieveRedisListByIndex",method = RequestMethod.POST)
-    public ResponseResult retrieveRedisListByIndex(@Param("index") int index) {
+    public ResponseResult retrieveRedisListByIndex(@RequestHeader("X-MY-HEADER") String myheader,@Param("index") int index) {
         return homeService.retrieveRedisListByIndex(index);
     }
 
@@ -162,5 +162,9 @@ public class HomeController {
         //cookie.setMaxAge(20);
         response.addCookie(cookie);
         return new ResponseResult<>("");
+    }
+    @RequestMapping(path = "/sendMail")
+    public ResponseResult sendMain() {
+        return homeService.sendMail();
     }
 }

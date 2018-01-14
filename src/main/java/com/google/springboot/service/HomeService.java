@@ -32,17 +32,26 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.net.InetAddress;
+import java.util.*;
 
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -101,6 +110,9 @@ public class HomeService {
 
     @Autowired
     RedisTemplate<String,Object> redisTemplate;
+
+    @Autowired
+    JavaMailSender javaMailSender;
 
 
     public ResponseResult home() {
@@ -326,5 +338,96 @@ public class HomeService {
             return new ResponseResult<>(result);
         }
         return new ResponseResult<>("");
+    }
+
+    public ResponseResult sendMail() {
+//        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+//        mailSender.setHost("smtp.163.com");
+//        mailSender.setPort(25);
+//
+//        mailSender.setUsername("ZW282615SC@163.com");
+//        mailSender.setPassword("1234SC.ZW");
+
+
+        /**
+         *  SSL mail basic properties settings:
+         */
+        Properties props = new Properties();
+        //props.put("mail.transport.protocol","smtp");
+        props.put("mail.smtp.host","smtp.163.com");
+        /**
+         * 163 mail :
+         *      IMAP imap.163.com 993(SSL) 143(no SSL)
+         *      SMTP smtp.163.com 465/994  25
+         *      POP3 pop.163.com  995      110
+         */
+        props.put("mail.smtp.port",465);
+        //props.put("mail.smtp.socketFactory.port",465);
+        props.put("mail.smtp.auth","true");
+        //props.put("mail.smtp.starttls.enable","true");
+        props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory"); // SSL
+
+        Authenticator authenticator = new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                /**
+                 * this is not the email password,WangYi give(let me set) me a third party mail usage password.
+                 */
+                return new PasswordAuthentication("ZW282615SC@163.com","2b172b");
+            }
+        };
+
+        Session session = Session.getDefaultInstance(props,authenticator);
+
+        MimeMessage msg = new MimeMessage(session);
+        try {
+            msg.addHeader("Content-type","text/HTML;charset=UTF-8");
+            /**
+             * you must set this,and it must be your valid send mail account! or error
+             */
+            msg.setFrom("ZW282615SC@163.com");
+            //msg.setReplyTo(InternetAddress.parse("ZW282615SC@163.com",false));
+            msg.setSubject("subject","UTF-8");
+            msg.setText("text","UTF-8");
+            /**
+             * invalid date,will cause 554 error code,which is marked as a spam email
+             */
+            msg.setSentDate(new Date());
+            /**
+             * send group mails,receiver will see all the other people who also got the mail.so use carefully!
+             */
+            msg.setRecipients(
+                    Message.RecipientType.TO,
+                    new InternetAddress[]{new InternetAddress("1097503158@qq.com",false),
+                                          new InternetAddress("hahaiamzhouwei@gmail.com",false)});
+
+            Multipart multipart = new MimeMultipart();
+
+            /**
+             * create the multi-part message body,msg.setText("text","UTF-8") is useless now
+             */
+            BodyPart msgBody = new MimeBodyPart();
+            msgBody.setDescription("body part description");
+            msgBody.setText("body part text");
+            multipart.addBodyPart(msgBody);
+
+            /**
+             * part two is attachment
+             */
+            BodyPart multiBody = new MimeBodyPart();
+            DataSource source = new FileDataSource("/home/me/openssl.cnf");
+            multiBody.setDataHandler(new DataHandler(source));
+            multiBody.setFileName("openssl.cnf");
+            multipart.addBodyPart(multiBody);
+
+            msg.setContent(multipart);
+
+
+            Transport.send(msg);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseResult<>("mail sent");
     }
 }

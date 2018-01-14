@@ -59,7 +59,7 @@ public class RedisConfig {
          *      redis> keys *
          *
          */
-        jedisConnectionFactory.setDatabase(1);
+        jedisConnectionFactory.setDatabase(0);
         return jedisConnectionFactory;
     }
 
@@ -76,7 +76,7 @@ public class RedisConfig {
         template.setConnectionFactory(jedisConnectionFactory());
         template.setEnableTransactionSupport(true);
         template.setKeySerializer(new StringRedisSerializer());
-        template.setValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
+        template.setValueSerializer(new StringRedisSerializer());
 
         template.setHashKeySerializer(new StringRedisSerializer());
         template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));

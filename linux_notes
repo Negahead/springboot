@@ -1,0 +1,24 @@
+openssl req -new -newkey rsa:1024 -nodes -keyout key.pem -out req.pem
+# self signed
+openssl req -x509 -days 365 -nodes -newkey rsa:1024 -keyout key.pem -out cert.pem
+openssl s_client -connect www.baidu.com:443 -showcerts
+# checkout private key
+openssl rsa -in key.pem -check
+# view a cert info
+openssl x509 -in cert.pem -text -noout
+
+# start ssh
+sudo /etc/init.d/ssh start[restart][stop] # or sudo systemctl start ssh
+# ssh config file
+ssh
+nano /etc/ssh/sshd_config
+# create ssh keys:
+ssh-key-gen -t rsa
+# transfer you public key to the server
+ssh-copy-id remote_host key.pub
+# cron task
+nano /etc/crontab
+# sftp
+sftp name@hostname
+# lls,put,get,etc
+> help

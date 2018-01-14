@@ -72,6 +72,11 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -102,7 +107,7 @@
         </dependency>
 
         <!--
-            connection pool
+            alibaba druid connection pool
         -->
         <dependency>
             <groupId>com.alibaba</groupId>
