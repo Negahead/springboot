@@ -68,7 +68,7 @@ public class HomeController {
      * @return
      */
     @RequestMapping(value = "/mongodb",method = RequestMethod.POST)
-    public ResponseResult invokeMongoDB(String operator,int age) {
+    public ResponseResult invokeMongoDB(@RequestParam("param") String operator) {
         return homeService.invokeMongoDB();
     }
 
@@ -123,6 +123,7 @@ public class HomeController {
 
     @RequestMapping(path = "/uploadFile",method = RequestMethod.POST)
     public ResponseResult uploadFile(@RequestParam("file") MultipartFile file) {
+
         return homeService.uploadFile(file);
     }
 
