@@ -8,9 +8,9 @@ public class NestedClass extends ExtendedClass implements Serializable {
 
     private String userName;
     private String userRealName;
-    private String userMobile;
+    private long userMobile;
 
-    private String teacherType;
+    private int teacherType;
     private String subjectIds;
 
     private TeacherInfo teacherInfo;
@@ -33,14 +33,6 @@ public class NestedClass extends ExtendedClass implements Serializable {
         this.userRealName = userRealName;
     }
 
-    public String getUserMobile() {
-        return userMobile;
-    }
-
-    public void setUserMobile(String userMobile) {
-        this.userMobile = userMobile;
-    }
-
     public TeacherInfo getTeacherInfo() {
         return teacherInfo;
     }
@@ -57,19 +49,27 @@ public class NestedClass extends ExtendedClass implements Serializable {
         this.userRoleList = userRoleList;
     }
 
-    public String getTeacherType() {
-        return teacherType;
-    }
-
-    public void setTeacherType(String teacherType) {
-        this.teacherType = teacherType;
-    }
-
     public String getSubjectIds() {
         return subjectIds;
     }
 
     public void setSubjectIds(String subjectIds) {
         this.subjectIds = subjectIds;
+    }
+
+    public int getTeacherType() {
+        return teacherType;
+    }
+
+    public void setTeacherType(int teacherType) {
+        this.teacherType = teacherType;
+    }
+
+    public long getUserMobile() {
+        return userMobile;
+    }
+
+    public void setUserMobile(long userMobile) {
+        this.userMobile = userMobile;
     }
 }

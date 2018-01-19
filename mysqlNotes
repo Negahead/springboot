@@ -141,3 +141,71 @@ create TRIGGER tg_a_expdata AFTER INSERT on expdata FOR EACH ROW set log10_value
 # CLOSE cur1;
 
 DECLARE cursor_a CURSOR FOR select * from A;
+
+
+
+
+# MYSQL DATA,DATETIME,TIMESTAMP,TIME types:
+DATE
+    'YYYY-MM-DD' format, range is '1000-01-01' to '9999-12-31'
+DATETIME
+    'YYYY-MM-DD HH:MM:SS' range is '1000-01-01 00:00:00' to '9999-12-31 24:59:59'
+TIMESTAMP
+    '1970-01-01 00:00:00' to '2038-01-19 03:14:07'
+TIME 'HH:MM:SS' '-838:59:59' TO '838:59:59'
+    The hours part may be so large because the TIME type can be used not only to represent a time of day (which must be less than 24 hours), but also
+    elapsed time or a time interval between two events (which may be much greater than 24 hours, or even negative).
+MySQL converts TIMESTAMP values from the current time zone to UTC for storage, and back from UTC to the current time zone for retrieval.
+
+
+
+###################################### change database or table character set to utf8:
+# alter table a character set utf8mb4 collate utf8mb4_unicode_ci
+# alter database will character set utf8mb4 collate utf8mb4_unicode_ci
+###################################### import data from comma separated .csv file
+# load data local infile '/home/will/yimi_A.csv' into table A character set utf8 fields terminated by ',' ignore 5 lines;
+###################################### dump data to local .csv file
+# mysql -u root -p will -e "select * from A" | sed 's/\t/,/g' > A.csv
+# mysqldump --host=192.168.1.247 --port=37360 -v -f --user=yimi -p yimi > schema.sql
+# mysql -u root -p will < schema.sql
+
+
+
+
+
+
+
+
+
+
+
+
+
+# DATE and TIME function:
+
+    SELECT current_date(); # 2018-01-17
+    select current_time(); # 10:47:20
+    select current_timestamp()
+    select now()
+    SELECT TIMESTAMP('2003-12-31') # '2003-12-31 00:00:00'
+    select date_format('2017-01-17 12:45:21','%Y-%m-%d %H:%i:%s') # 2017-01-17 12:45:21,as string
+    GET_FORMAT({DATE|TIME|DATETIME}, {'EUR'|'USA'|'JIS'|'ISO'|'INTERNAL'}) # date format,as string
+    select dayofmonth(),dayofweek(),dayofyear(),hour(),minute(),second(),year(),month(),day()
+
+    SELECT FROM_UNIXTIME(1447430881[, format]) # 2015-11-14 00:08:01
+    SELECT UNIX_TIMESTAMP('2015-11-13 10:20:19') # 1447431619
+
+    SELECT MAKETIME(12,15,30); # '12:15:30'
+    SELECT TIME('2003-12-31 01:02:03') # '01:02:03'
+
+    SELECT TIMESTAMPADD(MINUTE,1,'2003-01-02') # '2003-01-02 00:01:00'
+    SELECT TIMESTAMPDIFF(MONTH,'2003-02-01','2003-05-01') # 3
+    SELECT TIMESTAMPDIFF(YEAR,'2002-05-01','2001-01-01') # -1
+    select datediff('2007-12-22 12:34:24','2007-12-20'); # 2,Only the date parts of the values are used in the calculation.returns in days
+    SELECT DATE_ADD('2017-12-31',INTERVAL 1 DAY); # 2018-01-01
+        select date_add('2017-12-31',INTERVAL 1 HOUR); # 2017-12-31 01:00:00
+        returns DATETIME if the first argument is a DATETIME (or TIMESTAMP) value, or if the first argument is a DATE and the unit value uses HOURS, MINUTES, or SECONDS.
+        or String otherwise.
+
+
+The SQL standard requires that HAVING must reference only columns in the GROUP BY clause or columns used in aggregate functions.

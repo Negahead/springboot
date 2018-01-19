@@ -192,7 +192,7 @@ public class HomeService {
     }
 
     public ResponseResult mybatis() {
-        NestedClass nestedClass = userInfoRMapper.mybatis();
+        NestedClass nestedClass = userInfoRMapper.mybatis(0);
         if(nestedClass != null) {
             return new ResponseResult<>(nestedClass);
         }
@@ -415,7 +415,7 @@ public class HomeService {
              * part two is attachment
              */
             BodyPart multiBody = new MimeBodyPart();
-            DataSource source = new FileDataSource("/home/me/openssl.cnf");
+            DataSource source = new FileDataSource("/home/will/openssl.cnf");
             multiBody.setDataHandler(new DataHandler(source));
             multiBody.setFileName("openssl.cnf");
             multipart.addBodyPart(multiBody);
@@ -428,6 +428,11 @@ public class HomeService {
             e.printStackTrace();
         }
 
+        return new ResponseResult<>("mail sent");
+    }
+
+    public ResponseResult stringToIntInMybatis(String id) {
+        userInfoWMapper.stringToIntInMybatis(id);
         return new ResponseResult<>("mail sent");
     }
 }

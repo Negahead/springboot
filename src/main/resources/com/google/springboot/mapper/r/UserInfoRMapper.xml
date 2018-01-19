@@ -33,8 +33,10 @@
             timeout:This sets the number of seconds the driver will wait for the database to return from a request, before throwing an exception
     -->
     <select id="mybatis" resultMap="mybatisResultMap" >
-        select userId,userName,userPwd,userRealName,userMobile,userCreatedOn,userSex,teacherType,subjectIds from mis_user_info join mis_teacher_info on userId=userFid
-        where userId=100767788978001
+        <if test="flag == 0">
+            select userId,userName,userPwd,userRealName,userMobile,userCreatedOn,userSex,teacherType,subjectIds from mis_user_info join mis_teacher_info on userId=userFid
+            where userId=100
+        </if>
     </select>
     <resultMap id="mybatisResultMap" type="com.google.springboot.entity.response.NestedClass" autoMapping="true">
         <association property="teacherInfo" javaType="com.google.springboot.entity.response.TeacherInfo" column="userId" select="teacherInfoSelect"/>

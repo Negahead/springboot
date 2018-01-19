@@ -6,6 +6,34 @@ openssl s_client -connect www.baidu.com:443 -showcerts
 openssl rsa -in key.pem -check
 # view a cert info
 openssl x509 -in cert.pem -text -noout
+# view a remote site's cert
+echo | openssl s_client -servername www.baidu.com -connect www.baidu.com:443 2>/dev/null | openssl x509 -text
+# download a remote site's cert to local file
+openssl s_client -showcerts -connect www.baidu.com:443 </dev/null 2>/dev/null|openssl x509 -outform PEM >mycertfile.pem
+
+# certificate digital signature is used to verify a message,it is basically an encrypt hash of the message,hte recipient
+# can check if the message was tampered by hashing the received message and comparing this value with the decrypted signature.
+# to decrypt the signature,the corresponding public key is required.
+
+# digest(message)+encrypt with the sender's private key => message digital signature (sender side)
+# receiver get message+digital signature
+# decrypt message use receiver's private key and then calculate the message digest,
+# decrypt the signature with sender's public key and compare.
+
+# a certificate's fingerprint is the unique identifier of the certificate
+
+# Extracting SHA1 Fingerprint of SSL Certificate(-sha256,-md5)
+openssl x509 -noout -fingerprint -sha1 -inform pem -in ./cert.pem
+
+# use java keytool to generate a self signed certificate
+keytool -genkeypair -alias tomcat -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
+
+# checkout the content of the keystore
+keytool -list -v -keystore keystore.jks
+keytool -list -v -storetype pkcs12 -keystore keystore.p12
+
+# use an existing ssl certificate
+keytool -import -alias tomcat -file myCertificate.crt -keystore keystore.p12 -storepass password
 
 # start ssh
 sudo /etc/init.d/ssh start[restart][stop] # or sudo systemctl start ssh
@@ -22,3 +50,6 @@ nano /etc/crontab
 sftp name@hostname
 # lls,put,get,etc
 > help
+
+# download file via ssh
+scp -P 21098 /home/localuser/site/example.html cpanel_user@servername:/home/cpanel_user/public_html

@@ -14,7 +14,7 @@ public interface UserInfoRMapper {
     UserInfoResponse getUserInfo();
     List<Integer> getExistingIds(OrgOperationRequest request);
 
-    NestedClass mybatis();
+    NestedClass mybatis(@Param("flag") int flag);
 
     Map<String,String> mapResult(Map<String, Object> map1);
 

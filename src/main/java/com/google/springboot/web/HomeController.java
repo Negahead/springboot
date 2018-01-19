@@ -168,4 +168,9 @@ public class HomeController {
     public ResponseResult sendMain() {
         return homeService.sendMail();
     }
+
+    @RequestMapping(path = "/stringToIntInMybatis")
+    public ResponseResult stringToIntInMybatis(String id) {
+        return homeService.stringToIntInMybatis(id);
+    }
 }
