@@ -1,0 +1,534 @@
+Randon Access
+
+Newcomers sometimes find ‘‘random’’ a perplexing and disturbing word with
+respect to memory, as random often connotes chaos or unpredictability. What
+the word really means here is ‘‘at random,’’ indicating that you can reach into
+a random-access memory chip and pick out any of the bits it contains without
+disturbing any of the others
+
+Random access works like this: inside the chip, each bit is stored in its own
+memory cell, identical to the memory cell diagrammed in Figure 3-1. Each of
+the however-many memory cells has a unique number. This number is a cell’s
+(and hence a bit’s) address.
+
+Each chip has a number of pins coming out of it. The bulk of these pins are
+called address pins. One pin is called a data pin (see Figure 3-2). The address pins
+are electrical leads that carry a binary address code. This address is a binary
+number, expressed in 1s and 0s only. You apply this address to the address
+pins by encoding a binary 1 as (let’s say) 5 volts, and a binary 0 as 0 volts.
+Many other voltages have been used and are still used in computer hardware.
+What matters is that we all agree that a certain voltage on a pin represents a
+binary 1. Special circuits inside the RAM chip decode this address to one of
+the select inputs of the numerous memory cells inside the chip. For any given
+address applied to the address pins, only one select input will be raised to five
+volts, thereby selecting that memory cell.
+
+Chips are graded by how long it takes for the data to appear on the data pin
+after you’ve applied the address to the address pins. Obviously, the faster the
+better
+
+Understanding how a computer gathers its memory
+chips together into a coherent memory system is critical when you wish to
+write efficient assembly language programs.
+
+From a functional perspective, memory is measured in bytes. A byte
+is eight bits. Two bytes side by side are called a word, and two words side
+by side are called a double word. A quad word, as you might imagine,
+
+Most memory chips today do in fact store more than one bit
+at each address. Chips storing 1, 2, 3, 4, or 8,32 bits per address are relatively
+common
+
+Upscale computers based on newer 64-bit processors
+access memory 64 bits (one quad word) at a time. This can be confusing, so
+it’s better in most cases to envision a very long row of byte-size containers,
+each with its own unique address.
+
+Every byte of memory in the computer has its own unique address, even in
+computers that process 2, 4, or 8 bytes of information at a time.
+
+Every byte has its own address, but
+when a 32-bit computer accesses a byte, it actually reads 4 bytes starting at the
+address of the requested byte.
+
+The CPU chip’s most important job is to communicate with the computer’s
+memory system. Like a memory chip, a CPU chip is a small square of sili-
+con onto which a great many transistors
+
+Like the pins of memory chips, the CPU’s pins transfer information
+encoded as voltage levels, typically 3 to 5 volts. Five volts on a pin indicate a
+binary 1, and 0 volts on a pin indicate a binary 0
+
+Like memory chips, the CPU chip has a number of pins devoted to memory
+addresses, and these pins are connected to the computer’s system of memory
+chips.
+
+When the CPU needs to read a byte (or a word, double word, or quad
+word) from memory, it places the memory address of the byte to be read on
+its address pins, encoded as a binary number. Some few nanoseconds later,
+the requested byte appears (also as a binary number) on the data pins of the
+memory chips. The CPU chip also has data pins, and it slurps up the byte
+presented by the memory chips through its own data pins.
+
+the CPU passes an address to the memory system, and the memory
+system either accepts data from the CPU for storage at that address or places
+the data found at that address on the computer’s data bus for the CPU to
+process.
+
+Every CPU contains a very few data storage cubbyholes called registers
+The CPU could always store the data out
+in memory, but that takes considerably more time than tucking the data in
+a register. Because the registers are actually inside the CPU, placing data in
+a register or reading it back again from a register is fast.
+
+Like memory cells and, indeed, like the entire CPU, registers are made out of
+transistors; but rather than having numeric addresses, registers have individual
+names such as EAX or EDI.
+all CPU registers have certain common properties, some registers have unique
+special powers not shared by other registers.
+
+there is a set of codes that mean
+something to the CPU. These codes are called machine instructions, and their
+name is evocative of what they actually are: instructions to the CPU. When the
+CPU is executing a program, it picks a sequence of numbers off the data bus,
+one at a time. Each number tells the CPU to do something. The CPU knows
+how. When it completes executing one instruction, it picks the next one up
+and executes that. It continues doing so until something (a command in the
+program, or electrical signals such as a reset button) tells it to stop.
+
+each instruction tells the
+CPU to perform one generally small and limited task. Many instructions handed
+to the CPU in sequence direct the CPU to perform far more complicated tasks.
+Writing that sequence of instructions is what assembly language programming
+actually is.
+
+The binary numbers comprising a computer program are special only in the
+way that the CPU treats them. When a modern 32-bit CPU begins running,
+it fetches a double word from an agreed-upon address in memory. (How this
+starting address is agreed upon doesn’t matter right now.) This double word,
+consisting of 4 bytes in a row, is read from memory and loaded into the CPU.
+The CPU examines the pattern of binary bits contained in the double word, and
+then begins performing the task that the fetched machine instruction directs it
+to do.
+
+As soon as it finishes executing an instruction, the CPU goes out to memory
+and fetches the next machine instruction in sequence. Inside the CPU is a
+special register called the instruction pointer that quite literally contains the
+address of the next instruction to be fetched from memory and executed. Each
+time an instruction is completed, the instruction pointer is updated to point
+to the next instruction in memory.
+
+All of this is done literally like clockwork. The computer has an electri-
+cal subsystem called a system clock, which is actually an oscillator that emits
+square-wave pulses at very precisely intervals.
+As computers became faster, the majority of machine instructions executed
+in a single clock cycle. Modern CPUs can execute instructions in parallel, so
+multiple instructions can often execute in a single clock cycle.
+
+So the process goes: fetch and execute; fetch and execute. The CPU works its
+way through memory, with the instruction pointer register leading the way.
+As it goes, it works: moving data around in memory, moving values around in
+registers, passing data to peripherals, crunching data in arithmetic or logical
+operations.
+
+Computer programs are lists of binary machine instructions stored in memory.
+They are no different from any other list of data bytes stored in memory except in
+how they are interpreted when fetched by the CPU.
+
+machine instructions They are not numbers. They are binary patterns designed to throw
+electrical switches.
+
+Inside the CPU A significant number of transistors go into making up
+short-term storage called cache
+
+The extremely simple machine instruction 01000000 (40H) directs the CPU
+to add 1 to the value stored in register AX, with the sum placed back in AX.
+The CPU fetches a byte from memory. This byte contains the binary code
+01000000. Once the byte is fully within the CPU, the CPU in essence lets
+the machine instruction byte push eight transistor switches.
+In a chain reaction, those eight switches flip the states of first dozens, then
+hundreds, then thousands, and in some cases tens of thousands of tiny tran-
+sistor switches within the CPU. It isn’t random—this furious nanomoment of
+electrical activity within the CPU operates utterly according to patterns etched
+into the silicon of the CPU by Intel’s teams of engineers. Ultimately—perhaps
+after many thousands of individual switch throws—the value contained in
+register AX is suddenly one greater than it was before.
+
+The first piece of genuine magic in the nature of computers is that a string
+of binary codes in memory tells the computer what to do, step by step. The
+second piece of that magic is really the jewel in the crown: There are machine
+instructions that change the order in which machine instructions are fetched and
+executed.
+
+What this means is that the list of machine instructions in memory does
+not necessarily begin at the top and run without deviation to the bottom. The
+CPU can execute the first fifty or a hundred or a thousand instructions, then
+jump to the end of the program—or jump back to the start and begin again.
+It can skip and bounce up and down the list smoothly and at great speed. It
+can execute a few instructions up here, then zip down somewhere else and
+execute a few more instructions, then zip back and pick up where it left off, all
+without missing a beat or even wasting too much time.
+
+How is this done? Recall that the CPU includes a special register that always
+contains the address of the next instruction to be executed--instruction pointer,
+Add 100 to the instruction pointer, and the
+CPU will instantly skip 100 bytes down the list of machine instructions before
+it continues. Subtract 100 from the address stored in the instruction pointer,
+and the CPU will instantly jump back 100 bytes up the machine instruction list.
+
+The CPU can change its course of execution based
+on the work it has been doing. The CPU can decide whether to execute a given
+instruction or group of instructions, based on values stored in memory, or
+based on the individual state of several special one-bit CPU registers called
+flags. The CPU can count how many times it needs to do something, and then
+do that something that number of times.
+
+IBM had taken the program code that handled the keyboard, the display,
+and the disk drives and burned it into a special kind of memory chip called
+read-only memory (ROM). Ordinary random-access memory goes blank when
+power to it is turned off. ROM retains its data whether it has power or not.
+Thus, thousands of machine instructions did not have to be loaded from disk,
+because they were always there in a ROM chip soldered to the motherboard.
+The software on the ROM was called the Basic Input/Output System (BIOS)
+
+Windows 95 created the convincing
+illusion that all of the programs in memory were running at once. This was
+done by giving each program loaded into memory a short slice of the CPU’s
+time
+
+However, after a set period of time (usually a small fraction of a second)
+Windows 95 would ‘‘preempt’’ that first program, and give control of the CPU
+to the second program on the list. That program would execute instructions for
+a few milliseconds until it too was preempted. Windows 95 would go down
+the list, letting each program run for a little while. When it reached the bottom
+of the list, it would start again at the top and continue running through the
+list, round-robin fashion, letting each program run for a little while. The CPU
+was fast enough that the user sitting in front of the display would think that
+all the programs were running simultaneously.
+
+The computer is a box that follows a plan.
+You write the plan. The computer follows it by passing the instructions,
+byte by byte, to the CPU. At the bottom of it, the process is a hellishly
+complicated electrical chain reaction involving hundreds of thousands of
+switches composed of many hundreds of thousands or even millions of
+transistors.
+This plan, this list of machine instructions in memory, is your assembly
+language program.
+
+The real job of a CPU, and the real challenge of assembly
+language, lies in locating the required instructions and data in memory.
+Any idiot can learn machine instructions. (Many do.) The skill of assembly
+language consists of a deep comprehension of memory addressing. Everything else is
+details—and easy details at that.
+
+The oldest and now ancient memory model is called the real mode flat model.
+It’s thoroughly fossilized, but relatively straightforward. The elderly (and now
+retired) memory model is called the real mode segmented model. It may be the
+most hateful thing you ever learn in any kind of programming, assembly
+or otherwise. DOS programming at its peak used the real mode segmented
+model, and much Pepto Bismol was sold as a result. The newest memory
+model is called protected mode flat model, and it’s the memory model behind
+modern operating systems such as Windows 2000/XP/Vista/7 and Linux.
+
+The 8080 was an 8-bit CPU, meaning it processed 8 bits of information at
+a time. However, it had 16 address lines coming out of it.
+Sixteen address lines will address 64K bytes.you can count
+from 0 to 65,535.This means that every one of 65,536 separate memory locations 
+can have its own unique address, from 0 up to 65,535.
+
+The 8080 memory-addressing scheme was very simple: you put a 16-bit
+address out on the address lines, and you got back the 8-bit value that was
+stored at that address.
+
+there is no necessary relation between the
+number of address lines in a memory system and the size of the data stored at
+each location. The 8080 stored 8 bits at each location, but it could have stored
+16 or even 32 bits at each location, and still have 16 memory address lines.
+
+With the 8086 and 8088 CPUs, the
+20 address lines and one megabyte of memory was literally all they had. 
+The address of a byte in a memory bank is just the number of that byte
+starting from zero. This means that the last, or highest, address in a memory
+bank containing one megabyte is 100000H minus one, or 0FFFFFH.
+
+In real mode segmented model, an x86 CPU can ‘‘see’’ a full megabyte of
+memory. That is, the CPU chips set themselves up so that they can use
+20 of their 32 address pins and can pass a 20-bit address to the memory system.
+However,the bulk of the trouble you might have in understanding real mode segmented
+model stems from this fact: whereas those CPUs can see a full megabyte of
+memory, they are constrained to look at that megabyte through 16-bit blinders.
+The CPU can slide that piece of cardboard
+up and down the full length of its memory system. However, at any one time,
+it can access only 65,536 bytes.
+
+We’ve spoken informally of segments so far as chunks of memory within the
+larger memory space that the CPU can see and use. In the context of real mode
+segmented model, a segment is a region of memory that begins on a paragraph
+boundary and extends for some number of bytes. In real mode segmented
+model, this number is less than or equal to 64K (65,536).
+
+Byte : 1
+Word : 2
+Double word : 4
+Quad word : 8
+Ten byte : 10
+Paragraph : 16
+Page : 256
+Segment : 65535
+
+Any memory address evenly divisible by 16 is called a paragraph boundary.
+There are 64K differentparagraph boundaries where a segment may begin.
+Each paragraph boundary
+has a number. As always, the numbers begin from 0, and go to 64K minus
+one; in decimal 65,535, or in hex 0FFFFH. Because a segment may begin at
+any paragraph boundary, the number of the paragraph boundary at which a
+segment begins is called the segment address of that particular segment.
+In summary: segments may begin at any segment address. There are 65,536
+segment addresses evenly distributed across real mode’s full megabyte of
+memory, sixteen bytes apart.most important thing to understand 
+about a segment is that it may be up to
+64K bytes in size, but it doesn’t have to be. A segment may be only one byte
+long, or 256 bytes long, or 21,378 bytes long, or any length at all short of
+64K bytes.
+
+You define a segment primarily by stating where it begins. What, then, defines
+how long a segment is? Nothing, really—and we get into some really tricky
+semantics here. A segment is more a horizon than a place. Once you define
+where a segment begins, that segment can encompass any location in memory
+between that starting place and the horizon—which is 65,536 bytes down the
+line.when a segment is defined at some segment address, a program
+considers only the next few hundred or perhaps few thousand bytes as part of
+that segment
+
+called 32-bit CPUs because most of their internal
+registers are 32 bits in size. Since the mid-2000s, many of the new x86 CPUs
+are 64 bits in design, with registers that are 64 bits wide
+
+Registers do many jobs, but perhaps their most important single job is
+holding addresses of important locations in memory.
+
+How do you put a 20-bit memory address in a 16-bit register? You don’t.
+You put a 20-bit address in two 16-bit registers.
+What happens is this: all memory locations in real mode’s megabyte of
+memory have not one address but two. Every byte in memory is assumed to
+reside in a segment. A byte’s complete address, then, consists of the address of
+its segment, along with the distance of the byte from the start of that segment.
+Recall that the address of the segment is the byte’s segment address. The byte’s
+distance from the start of the segment is the byte’s offset address. Both addresses
+must be specified to completely describe any single byte’s location within the
+full megabyte of real mode memory. When written out, the segment address
+comes first, followed by the offset address. The two are separated with a colon.
+Segment:offset addresses are always written in hexadecimal.
+
+for example : given as 0001:0019. This means that MyByte falls within segment 0001H and
+is located 0019H bytes from the start of that segment.
+
+In summary: to express a 20-bit address in two 16-bit registers is to put the
+segment address into one 16-bit register, and the offset address into another
+16-bit register. The two registers taken together identify one byte among all
+1,048,576 bytes in real mode’s megabyte of memory.
+
+The segment registers have names that reflect their general functions: CS,
+DS, SS, ES, FS, and GS. FS and GS exist only in the 386 and later Intel x86
+CPUs—but are still 16 bits in size. All segment registers are 16 bits in size,
+irrespective of the CPU. This is true even of the 32-bit CPUs.
+
+CS stands for code segment. Machine instructions exist at some offset into a
+code segment. The segment address of the code segment of the currently
+executing instruction is contained in CS.
+
+DS stands for data segment. Variables and other data exist at some offset
+into a data segment. There may be many data segments, but the CPU may
+only use one at a time, by placing the segment address of that segment in
+register DS.
+
+SS stands for stack segment. The stack is a very important component of the
+CPU used for temporary storage of data and addresses. I explain how the
+stack works a little later; for now simply understand that, like everything
+else within real mode’s megabyte of memory, the stack has a segment
+address, which is contained in SS.
+
+ES stands for extra segment. The extra segment is exactly that: a spare
+segment that may be used for specifying a location in memory.
+
+FS and GS are clones of ES. They are both additional segments with no
+specific job or specialty. Their names come from the fact that they were
+created after ES (think, E, F, G). Don’t forget that they exist only in the 386
+and later x86 CPUs!
+
+The segment registers exist only to hold segment addresses. They can be forced
+to do a very few other things in real mode, but by and large, segment registers
+should be considered specialists in holding segment addresses. The x86 CPUs
+have a crew of generalist registers to do the rest of the work of assembly
+language computing. Among many other things, these general-purpose registers
+are used to hold the offset addresses that must be paired with segment
+addresses to pin down a single location in memory. They also hold values for
+arithmetic manipulation, for bit-shifting (more on this later) and many other
+things. They are truly the craftsman’s pockets inside the CPU.
+
+The‘‘bitness’’ of the world is almost entirely defined by the width of the x86 CPU
+registers.
+
+Like the segment registers, the general-purpose registers are memory loca-
+tions existing inside the CPU chip itself; and like the segment registers, they
+all have names rather than numeric addresses. The general-purpose registers
+really are generalists in that all of them share a large suite of capabilities. How-
+ever, some of the general-purpose registers also have what I call a ‘‘hidden
+agenda’’: a task or set of tasks that only it can perform.
+
+There are eight 16-bit general-purpose registers: AX, BX, CX, DX, BP, SI, DI,
+and SP.They are all 16 bits in size, and
+you can place any value in them that may be expressed in 16 bits or fewer
+
+Each of the four registers shown in Figure 4-6 is fully 32 bits in size. However,
+in each register, the lower 16 bits have a name of their own. The lower 16 bits
+of ESI, for example, may be referenced as SI. The lower 16 bits of EDI may be
+referenced as DI. If you’re writing programs to run in real mode on an 8088
+machine such as the ancient IBM PC, you can only reference the DI part—the
+high 16 bits don’t exist on that CPU!
+
+Unfortunately, the high 16 bits of the 32-bit general-purpose registers do not
+have their own names. You can access the low 16 bits of ESI as SI, but to get at
+the high 16 bits, you must refer to ESI and get the whole 32-bit shebang.
+
+
+           EAX 
+                             AX
+	   	         AH      AL         
+(32)----------------|--------|--------(0)   AX
+
+While executing a program, the CPU uses IP(instruction pointer) 
+to keep track of where it is in the
+current code segment. Each time an instruction is executed, IP is incremented
+by some number of bytes. The number of bytes is the size of the instruction
+just executed. The net result is to bump IP further into memory, so that it
+points to the start of the next instruction to be executed.The CPU is careful
+to increment IP by just the right number of bytes, so that it does in fact end up
+pointing to the start of the next instruction, and not merely into the middle of
+the last instruction or some other instruction.
+
+The segment address is kept in the code segment
+register CS. Together, CS and IP contain the full address of the next machine
+instruction to be executed.
+
+IP is notable in being the only register that can be neither read from nor
+written to directly.
+
+In real mode, if you recall, the CPU can see only one megabyte (1,048,576) of
+memory. You can access every last one of those million-odd bytes by using the
+segment:offset register trick shown earlier to form a 20-bit address out of two
+16-bit addresses contained in two registers. Or, you can be content with 64K
+of memory, and not fool with segments at all.
+
+In the real mode flat model, your program and all the data it works on
+must exist within a single 64K block of memory.
+
+A segment address is not really a memory
+address. A segment address specifies one of the 65,535 slots at which a segment
+may begin. One of these slots exists every 16 bytes from the bottom of memory
+to the top.
+
+The CPU handles
+the combination of segments and offsets into a full 20-bit address internally.
+Your job is to tell the CPU where the two different components of that 20-bit
+address are.
+
+ES:DI,
+for example, specifies the address as the distance in DI from the start of the
+segment called out in ES.
+
+you can have any reasonable number of code and data segments, not just two
+of each. You can access two data segments at the same time, because you have
+two segment registers available to do the job: DS and ES.
+However, you only have one code
+segment register, CS. CS always points to the current code segment, and the
+next instruction to be executed is pointed to by the IP register.
+
+There is only one stack segment for any single program, specified by the
+stack segment register SS. The stack pointer register SP points to the memory
+address (relative to SS, albeit in an upside-down direction) where the next stack
+operation will take place.
+
+
+In Protected Mode Flat Model
+The segment registers still exist, but they work in a radically different way.
+Not only don’t you have to fool with them; you can’t. The segment registers
+are now considered part of the operating system, and in almost all cases
+you can neither read nor change them directly. Their new job is to define
+where your 4GB memory space exists in physical or virtual memory. Physical
+memory may be much larger than 4GB, and currently 4GB of memory is not
+especially expensive. However, a 32-bit register can only express 4,294,967,296
+different locations. If you have more than 4GB of memory in your computer,
+the operating system must arrange a 4GB region within memory, and your
+programs are limited to operating in this region. Defining where in your larger
+memory system this 4GB region falls is the job of the segment registers, and
+the operating system keeps them very close to its vest.
+
+It’s enough to understand that when your program runs, it receives a
+4GB address space in which to play, and any 32-bit register can potentially
+address any of those 4 billion memory locations, all by itself.
+
+From a height, the process of assembly language programming (or pro-
+gramming in many other languages) consists of taking human-readable text
+files and translating them somehow into files containing sequences of binary
+machine instructions that the CPU can understand.
+
+A computer architecture that stores the least significant
+byte of a multibyte value at the lowest offset is called little endian. A computer
+architecture that stores the most significant byte of a multibyte value at the
+lowest offset is called big endian.
+
+Program translators are translators that generate machine instructions that
+the CPU can understand. A program translator reads a source code file line
+by line, and writes a binary file of machine instructions that accomplishes the
+computer actions described by the source code file. This binary file is called an
+object code file.
+
+A compiler is a program translator that reads in source code files written in
+higher-level languages such as C or Pascal and writes out object code files.
+
+An assembler is a special type of compiler. It, too, is a program translator that
+reads source code files and outputs object code files for execution by the CPU.
+However, an assembler is a translator designed specifically to translate what
+we call assembly language into object code.
+
+Taken together, a mnemonic and its operands are called an instruction.
+mov EBX,ESP  ;place the current value of the stack pointer into register EBX
+	assembler writes the equivalent machine instruction
+mov ebp,esp--------------------------------------------------> 8BH ECH
+
+Assemblers read your source code files and generate an object code file
+containing the machine instructions that the CPU understands, plus any data
+you’ve defined in the source code.
+the object code files produced by modern assemblers are a sort of inter-
+mediate step between source code and executable program. This intermediate
+step is a type of binary file called an object module, or simply an object code file.
+Object code files cannot themselves be run as programs. An additional step,
+called linking, is necessary to turn object code files into executable program
+files.
+The reason for object code files as intermediate steps is that a single large
+source code file may be divided up into numerous smaller source code files
+to keep the files manageable in size and complexity. The assembler assembles
+the various fragments separately, and the several resulting object code files
+are then woven together into a single executable program file.
+
+To process several object modules into a single executable module, the linker
+must first build an index called a symbol table, with an entry for every named
+item in every object module it links, with information about what name (called
+a symbol) refers to what location within the module. Once the symbol table is
+complete, the linker builds an image of how the executable program will be
+arranged in memory when the operating system loads it. This image is then
+written to disk as the executable file.
+
+The most important thing about the image that the linker builds relates
+to addresses. Object modules are allowed to refer to symbols in other object
+modules. During assembly, these external references are left as holes to be filled
+later—naturally enough, because the module in which these external symbols
+exist may not have been assembled or even written yet. As the linker builds
+an image of the eventual executable program file, it learns where all of the
+symbols are located within the image, and thus can drop real addresses into
+all of the external reference holes.
+
+
+                                                                                                                                                   
+ 
