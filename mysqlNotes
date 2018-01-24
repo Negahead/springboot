@@ -173,14 +173,6 @@ MySQL converts TIMESTAMP values from the current time zone to UTC for storage, a
 
 
 
-
-
-
-
-
-
-
-
 # DATE and TIME function:
 
     SELECT current_date(); # 2018-01-17
@@ -209,3 +201,96 @@ MySQL converts TIMESTAMP values from the current time zone to UTC for storage, a
 
 
 The SQL standard requires that HAVING must reference only columns in the GROUP BY clause or columns used in aggregate functions.
+
+
+# ##########################################################  MySQL UNION
+
+MySQL UNION operator allows you to combine two or more result sets of queries into a single result set.
+
+To combine result set of two or more queries using the UNION operator, there are the basic rules that you must follow:
+
+First, the number and the orders of columns that appear in all SELECT statements must be the same.
+Second, the data types of columns must be the same or convertible.
+By default, the UNION operator removes duplicate rows even if you don’t specify the DISTINCT operator explicitly.
+
+DROP TABLE IF EXISTS t1;
+DROP TABLE IF EXISTS t2;
+
+CREATE TABLE t1 (
+    id INT PRIMARY KEY
+);
+
+CREATE TABLE t2 (
+    id INT PRIMARY KEY
+);
+
+INSERT INTO t1 VALUES (1),(2),(3);
+INSERT INTO t2 VALUES (2),(3),(4);
+
+SELECT id
+FROM t1
+UNION
+SELECT id
+FROM t2;
+
++----+
+| id |
++----+
+|  1 |
+|  2 |
+|  3 |
+|  4 |
++----+
+4 rows in set (0.00 sec)
+
+If you use the UNION ALL explicitly, the duplicate rows, if available, remain in the result.
+Because UNION ALL does not need to handle duplicates, it performs faster than UNION DISTINCT .
+
+SELECT id
+FROM t1
+UNION ALL
+SELECT id
+FROM t2;
+
++----+
+| id |
++----+
+|  1 |
+|  2 |
+|  3 |
+|  2 |
+|  3 |
+|  4 |
++----+
+6 rows in set (0.00 sec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

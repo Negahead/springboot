@@ -173,4 +173,9 @@ public class HomeController {
     public ResponseResult stringToIntInMybatis(String id) {
         return homeService.stringToIntInMybatis(id);
     }
+
+    @RequestMapping(path = "/mysqlDateTime")
+    public ResponseResult mysqlDateTime(){
+        return homeService.mysqlDateTime();
+    }
 }

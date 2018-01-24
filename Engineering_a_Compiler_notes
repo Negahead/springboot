@@ -1,4 +1,4 @@
-Randon Access
+Random Access
 
 Newcomers sometimes find ‘‘random’’ a perplexing and disturbing word with
 respect to memory, as random often connotes chaos or unpredictability. What
@@ -11,7 +11,7 @@ memory cell, identical to the memory cell diagrammed in Figure 3-1. Each of
 the however-many memory cells has a unique number. This number is a cell’s
 (and hence a bit’s) address.
 
-Each chip has a number of pins coming out of it. The bulk of these pins are
+Each chip has a number of pins coming out of it. Thme bulk of these pins are
 called address pins. One pin is called a data pin (see Figure 3-2). The address pins
 are electrical leads that carry a binary address code. This address is a binary
 number, expressed in 1s and 0s only. You apply this address to the address
@@ -380,6 +380,37 @@ There are eight 16-bit general-purpose registers: AX, BX, CX, DX, BP, SI, DI,
 and SP.They are all 16 bits in size, and
 you can place any value in them that may be expressed in 16 bits or fewer
 
+Four 32-bit data registers are used for arithmetic,logic and other operations,
+These 32 bits registers can be used in three ways:
+    as complete 32 bit data registers: EAX,EBX,ECX,EDX
+    lower halves of the 32 bit registers can be used as four 16-bit data registers,
+    AX,BX,CX,DX
+    Lower and higher halves of the above-mentioned four 16-bit registers can be 
+    used as eight 8-bit data registers: AH, AL, BH, BL, CH, CL, DH, and DL.
+
+AX is the primary accumulator,it is used in input/output and the most arithmetic
+instructions.
+
+BX is known as the base register,as it could be used in indexed addressing.
+
+CX is known as the count register,as the ECX,CX register store the loop count
+in iterative operations.
+
+DX is known as the data register,It is also used in input/output operations
+,It is also used with AX register along with DX for multiply and divide operations
+involving large values
+
+The 32-bit index registers, ESI and EDI, and their 16-bit rightmost portions. SI and DI are used for indexed addressing and sometimes used in addition and subtraction. 
+Source Index (SI) − It is used as source index for string operations.
+
+Destination Index (DI) − It is used as destination index for string operations.
+
+Base Pointer (BP) − The 16-bit BP register mainly helps in referencing the parameter variables passed to a subroutine. The address in SS register is combined with the offset in BP to get the location of the parameter. BP can also be combined with DI and SI as base register for special addressing.
+
+Stack Pointer (SP) − The 16-bit SP register provides the offset value within the program stack. SP in association with the SS register (SS:SP) refers to be current position of data or address within the program stack.
+
+Instruction Pointer (IP) − The 16-bit IP register stores the offset address of the next instruction to be executed. IP in association with the CS register (as CS:IP) gives the complete address of the current instruction in the code segment.
+
 Each of the four registers shown in Figure 4-6 is fully 32 bits in size. However,
 in each register, the lower 16 bits have a name of their own. The lower 16 bits
 of ESI, for example, may be referenced as SI. The lower 16 bits of EDI may be
@@ -518,7 +549,7 @@ item in every object module it links, with information about what name (called
 a symbol) refers to what location within the module. Once the symbol table is
 complete, the linker builds an image of how the executable program will be
 arranged in memory when the operating system loads it. This image is then
-written to disk as the executable file.
+written to disk as the executable file.s
 
 The most important thing about the image that the linker builds relates
 to addresses. Object modules are allowed to refer to symbols in other object
@@ -530,5 +561,124 @@ symbols are located within the image, and thus can drop real addresses into
 all of the external reference holes.
 
 
-                                                                                                                                                   
+What the Make mechanism does is build executable program files from
+their component parts. The Make utility is a puppet master that executes
+other programs according to a master plan, which is a simple text file called a
+makefile. The makefile (which by default is named ‘‘makefile’’) is a little like a
+computer program in that it specifies how something is to be done; but unlike
+a computer program, it doesn’t specify the precise sequence of operations to
+be taken. What it does is specify what pieces of a program are required to
+build other pieces of the program, and in doing so ultimately defines what it
+takes to build the final executable file. It does this by specifying certain rules
+called dependencies.
+
+eatsyscall: eatsyscall.o 
+        ld -o eatsyscall.o eatsyscall      (tab)               
+eatsyscall.o: eatsyscall.asm
+        nasm -f elf64 -g -F stabs eatsyscall.asm                                                                                                                                
  
+
+The mov instruction can move a byte,word(16 bytes),or double word(32 bits) of data from one 
+register to another,from a register into memory,or from memory into a register,what actually
+happens is that data is copied from a source to a destination,Once copied to the destination,
+however, the data does not vanish from the source, but continues to exist
+in both places.
+
+mov eax,1 as in  det,src
+the source operand(the literal value 1) is copied into destination operand EAX
+Three different flavors of data may be used as operands: memory data, register
+data, and immediate data:
+
+mov eax,42h      source is immediate data
+mov ebx,              edi both are 32-bit register data
+mov bx,cx            both are 16-bit register data
+mov DL,BH         both are 8bit register data
+mov [EBP],EDI  destination is 32-bit memory data at the address stored in ebp
+mov edx,[esi]     source is 32-bit memory data at the address stored in esi
+
+Immediate data must be of an appropriate size for the operand. For example,
+you can’t move a 16-bit immediate value into an 8-bit register section such as
+AH or DL.
+
+mov eax,'WXYZ'
+
+most significant                                              least significant
+                Z                       Y                       X                       W
+             5AH                59H                  58H                 57H
+                                                                   AH                   AL
+                                                                                 AX    
+
+                                                      EAX
+
+Data stored inside a CPU register is known as register data, and accessing
+register data directly is an addressing mode called register addressing. Register
+addressing is done by simply naming the register you want to work with.
+
+mov ebp,esi  ; 32-bit
+mov bl,ch       ;  8-bit
+add di,ax        ; 16-bit
+add ecx,edx  ; 32-bit
+
+the ADD constructions add the source and destination operands,the sum replaces whatever was
+in the destination operand.
+
+mov eax,[ebx]
+mov eax,[ebx+ecx]
+mov eax,[ebx+ecx+11]
+whatever is inside the brackets is called the effective address of a data item in memory
+in x86 hardware structure,no more than two register may be added together to form the
+effective address.
+
+EatMsg: db "Eat at Joe's!"
+mov edx,[EatMsg]
+what this instruction does is go out to the location in meory specified by the address represented by
+EatMsg,pull the first 32 bits' worth of data from that address,and load that data into EDX starting
+with least significant byte in EDX.Given the contents we've defined for EatMsg,that would be
+the four characters "E","a","t",and " ".
+
+what if you only want to work a single character,and not the first four?
+mov al,[EatMsg]
+AL,of course,is contained within EAX,it is not a separate register,But the name AL allows you to
+fetch only one byte at a time from memory.
+or
+mov ax,[EatMsg]
+this time,the characters "E" and "a" are read from memory and placed in the two least significant bytes
+of EAX.
+
+A flag is a single bit of information whose meaning is independent of any
+other bit. A bit can be set to 1 or cleared to 0 by the CPU as its needs require.
+The idea is to tell you, the programmer, the state of certain conditions inside
+the CPU, so that your program can test for and act on the states of those
+conditions. Much more rarely, you, the programmer, set a flag as a way of
+signaling something to the CPU.
+
+EFlags as a whole is a single 32-bit register buried inside the CPU. It’s the
+32-bit extended descendent of the 16-bit Flags register present in the 8086/8088
+CPUs. Each of those 32 bits is a flag, though only a few are commonplace,
+and fewer still are useful when you’re just learning your way around. Many,
+furthermore, are still undefined by Intel and not (yet) used.
+
+Several x86 machine instructions come in pairs. Simplest among those are INC
+and DEC , which increment and decrement an operand by one, respectively.
+Both INC and DEC take only one operand. An error will be flagged by the
+assembler if you try to use either INC or DEC with two operands, or without
+any operands.
+
+The difference with INC is that there is
+no carry. The Carry flag is not affected by INC , so don’t try to use it to perform
+multidigit arithmetic.
+
+The simplest example of a conditional jump instruction, and the one you’re
+likely to use the most, is JNZ , Jump If Not Zero. The JNZ instruction tests the
+value of the Zero flag. If ZF is set (that is, equal to 1), then nothing happens
+and the CPU executes the next instruction in sequence. However, if ZF is not
+set (that is, equal to 0), then execution travels to a new destination in your
+program.
+
+mov eax,5
+DoMore: dec eax
+                      jnz DoMore
+
+
+
+

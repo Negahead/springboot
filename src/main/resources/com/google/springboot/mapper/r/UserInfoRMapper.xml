@@ -65,4 +65,8 @@
         call show_part_of_day();
     </select>
 
+    <select id="mysqlDateTime" resultType="com.google.springboot.entity.response.MysqlDateTime">
+        SELECT id,age,createdOn,type from A
+    </select>
+
 </mapper>

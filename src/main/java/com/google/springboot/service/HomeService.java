@@ -10,6 +10,7 @@ import com.google.springboot.entity.mongo.CustomerRepository;
 import com.google.springboot.entity.redis.Movie;
 import com.google.springboot.entity.redis.RedisRepository;
 import com.google.springboot.entity.request.OrgOperationRequest;
+import com.google.springboot.entity.response.MysqlDateTime;
 import com.google.springboot.entity.response.NestedClass;
 import com.google.springboot.entity.response.UserInfoResponse;
 import com.google.springboot.interfaces.UserDAO;
@@ -434,5 +435,10 @@ public class HomeService {
     public ResponseResult stringToIntInMybatis(String id) {
         userInfoWMapper.stringToIntInMybatis(id);
         return new ResponseResult<>("mail sent");
+    }
+
+    public ResponseResult mysqlDateTime() {
+        List<MysqlDateTime> response = userInfoRMapper.mysqlDateTime();
+        return new ResponseResult<>(response);
     }
 }
