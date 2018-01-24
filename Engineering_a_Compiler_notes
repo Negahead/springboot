@@ -680,5 +680,287 @@ DoMore: dec eax
                       jnz DoMore
 
 
+mov ax,-42
+movsx ebx,ax # move with sign
+
+Some instructions act on registers or even memory locations that are not
+stated in a list of operands. These instructions do in fact have operands, but
+they represent assumptions made by the instruction. Such operands are called
+implicit operands, and they do not change and cannot be changed.
+
+The best examples of implicit operands in the x86 instruction set are the
+multiplication and division instructions.One set, MUL and DIV , handle unsigned calculations. The other,
+IMUL and IDIV , handle signed calculations.
+
+multiplication
+has a special problem: it generates output values that are often hugely larger
+than the input values.
+
+Intel’s designers solved the problem the only way they could: by
+using two registers to hold the product. It’s not immediately obvious to
+non-mathematicians, but it’s true (try it on a calculator!) that the largest
+product of two binary numbers can be expressed in no more than twice the
+number of bits required by the larger factor. Simply put, any product of two
+16-bit values will fit in 32 bits, and any product of two 32-bit values will fit in
+64 bits. Therefore, while two registers may be needed to hold the product, no
+more than two registers will ever be needed.
+
+MUL is an odd bird from an operand
+standpoint: it takes only one operand, which contains one of the factors to be
+multiplied. The other factor is implicit, as is the pair of registers that receives
+the product of the calculation.
+
+mul ebx
+
+the implicit operands depend on the size of the explicit one
+
+mul  r/m8(explicit factor one)       AL(implicit factor two)       AX                           (product)
+mul  r/m16(explicit factor one)     AX(implicit factor two)      DX and AX          (product)
+mul  r/m32(explicit factor one)     EAX(implicit factor two)   EDX and EAX    (product)
+
+
+DIV  r/m8(explicit factor one)       AL(divisor)       AH                           (reminder)
+DIV  r/m16(explicit factor one)     AX(divisor)      DX                           (reminder)
+DIV  r/m32(explicit factor one)     EAX(divisor)   EDX                        (reminder)
+                                
+
+NEG AL   (multiply by -1)
+NEG BYTE [BX] ; negates BYTE quantity at [BX]
+NEG WORD [DI] ;Negates WORD quantity at [DI]
+NEG DWORD [EAX] ; Negates DWORD quantity at [EAX]
+
+you must use a size specifier ( BYTE , WORD , DWORD ) with memory
+data!
+
+Operand Symbols
+r8: An 8-bit register half, one of AH, AL, BH, BL, CH, CL, DH, or DL
+16: A 16-bit general-purpose register, one of AX, BX, CX, DX, BP, SP, SI,or DI
+r32: A 32-bit general-purpose register, one of EAX, EBX, ECX, EDX, EBP,ESP, ESI, or EDI
+sr: One of the segment registers, CS, DS, SS, ES, FS, or GS
+m8: An 8-bit byte of memory data
+m16: A 16-bit word of memory data
+m32: A 32-bit word of memory data
+i8: An 8-bit byte of immediate data
+i16: A 16-bit word of immediate data
+i32: A 32-bit word of immediate data
+d8: An 8-bit signed displacement.
+d16: A 16-bit signed displacement.
+d32: A 32-bit signed displacement
+
+
+
+.data section
+The .data section contains data definitions of initialized data items. Initialized
+data is data that has a value before the program begins running. These values
+are part of the executable file. They are loaded into memory when the
+executable file is loaded into memory for execution. You don’t have to load
+them with their values, and no machine cycles are used in their creation
+beyond what it takes to load the program as a whole into memory.
+The important thing to remember about the .data section is that the more
+initialized data items you define, the larger the executable file will be, and the
+longer it will take to load it from disk into memory when you run it.
+
+.bss section
+Not all data items need to have values before the program begins running.
+When you’re reading data from a disk file, for example, you need to have a
+place for the data to go after it comes in from disk. Data buffers like that are
+defined in the .bss section of your program. You set aside some number of
+bytes for a buffer and give the buffer a name, but you don’t say what values
+are to be present in the buffer.
+There’s a crucial difference between data items defined in the .data section
+and data items defined in the .bss section: data items in the .data section add to
+the size of your executable file. Data items in the .bss section do not. A buffer
+that takes up 16,000 bytes (or more, sometimes much more) can be defined
+in .bss and add almost nothing (about 50 bytes for the description) to the
+executable file size.
+
+.text section
+The actual machine instructions that make up your program go into the .text
+section. Ordinarily, no data items are defined in .text. The .text section contains
+symbols called labels that identify locations in the program code for jumps and
+calls, but beyond your instruction mnemonics, that’s about it.
+All global labels must be declared in the .text section, or the labels cannot
+be ‘‘seen’’ outside your program by the Linux linker or the Linux loader.
+
+Labels:
+A label is a sort of bookmark, describing a place in the program code and
+giving it a name that’s easier to remember than a naked memory address.
+Labels are used to indicate the places where jump instructions should jump
+to, and they give names to callable assembly language procedures.
+
+Labels must begin with a letter, or else with an underscore, period
+Labels must be followed by a colon when they are defined.
+Labels are case sensitive
+
+_ start label indicates where the program begins. Every Linux assembly
+language program has to be marked this way, and with the precise label
+_ start . (It’s case sensitive, so don’t try using _ START or _ Start .) Furthermore,
+this label must be marked as global at the top of the .text section,
+
+A variable is defined by associating an identifier with a data definition directive.
+
+MyByte db 07H                     ; 8 bits in size
+MyWord dw 0FFFFh          ; 16 bits in size
+MyDouble dd 0B8000000H  ; 32 bits in size
+
+Think of the DB directive as ‘‘Define Byte.’’ DB sets aside one byte of memory
+for data storage. Think of the DW directive as ‘‘Define Word.’’ DW sets aside
+one word (16 bits, or 2 bytes) of memory for data storage. Think of the DD
+directive as ‘‘Define Double.’’ DD sets aside a double word in memory for
+storage, typically for full 32-bit memory addresses.
+
+EatMsg: db "Eat at Joe's!",10
+Strings are a slight exception to the rule that a data definition directive sets
+aside a particular quantity of memory.strings are defined simply by
+associating a label with the place where the string starts.
+The EatMsg label and its DB directive specify one byte in memory as the string’s starting point.
+
+In Linux text work, the end-of-line (EOL) character has the numeric value
+of 10. It indicates to the operating system where a line submitted for display to
+the Linux console ends. Any subsequent text displayed to the console will be
+shown on the next line down
+
+TwoLineMsg: db "Eat at Joe's...",10,"...Ten million files can' all be wrong",10
+
+EatLen: equ $-EatMsg
+
+This is an example of a larger class of things called assembly-time calculations.
+What we’re doing here is calculating the length of the string variable EatMsg ,
+and making that length value accessible through the label EatLen . At any point
+in your program, if you need to use the length of EatMsg , you can use the label
+EatLen .
+
+A statement containing the directive EQU is called an equate. An equate is
+a way of associating a value with a label.
+
+ As explained earlier, at assembly time NASM chews through your source
+code files and builds an intermediate file with a .o extension. The $ token marks
+the spot where NASM is in the intermediate file (not the source code file!). The
+label EatMsg marks the beginning of the advertising slogan string. Immediately
+after the last character of EatMsg is the label EatLen . Labels, remember, are not
+data, but locations—and, in the case of assembly language, addresses. When
+NASM reaches the label EatLen , the value of $ is the location immediately
+after the last character in EatMsg . The assembly-time calculation is to take
+the location represented by the $ token (which, when the calculation is done,
+contains the location just past the end of the EatMsg string) and subtract from
+it location of the beginning of the EatMsg string. End – Beginning = Length.
+
+
+The x86 stack (and most other stacks in other computer architectures) is like
+that. It’s called a last in, first out, or LIFO, stack. Instead of plates, we push
+chunks of data onto the top of the stack, and they remain on the stack until we
+pull them off in reverse order.
+
+The stack doesn’t exist in some separate alcove of the CPU. It exists in
+ordinary memory, and in fact what we call ‘‘the stack’’ is really a way of
+managing data in memory. The stack is a place where we can tuck away one
+or two (or however many) 32-bit double words for the time being, and come
+back to them a little later. Its primary virtue is that it does not require that we
+give the stored data a name. We put that data on the stack, and we retrieve it
+later not by its memory address but by its position.
+
+When we place something on the stack, we say that we push it; when we
+retrieve something from the stack, we say that we pop it. The stack grows or
+shrinks as data is pushed onto it or popped off of it. The most recently pushed
+item on the stack is said to be at the ‘‘top of the stack.’’ When we pop an item
+from the stack, what we get is the item at the top of the stack.
+
+In the x86 architecture, the top of the stack is marked by a register called the
+stack pointer, with the formal name ESP. It’s a 32-bit register, and it holds the
+memory address of the last item pushed onto the stack.
+
+
+Highest memory--------------------------
+   addresses  |                        |    ESP moves up and down as items are pushed
+              |       The stack        |    onto or popped from the stack
+              |                        |
+              |                        |
+              |                        |    ESP always points to the last item
+              |                        |    pushed onto the stack
+              |                        |
+              |------------------------|
+              |                        |
+              |                        |
+              |                        |
+              |                        |
+              |      Free memory       |
+              |                        |
+              |                        |
+              |                        |
+              |                        |
+              |------------------------|
+              |                        |
+              |                        |
+              |     .bss Section       |
+              |   uninitialized data   |
+              |        items           |
+              --------------------------
+              |                        |
+              |   .data section        |
+              |  initialized data      |
+              |        items           |
+              |                        |
+              |                        |
+              --------------------------
+              |                        |
+              |     .text section      |
+              |      program code      |
+              |                        |
+              |                        |
+              |                        |
+Lowest memory --------------------------
+address
+
+The stack grows toward the rest of your program, but unless you’re doing really extraordinary—or
+stupid—things, there’s little or no chance that the stack will grow so large as
+to collide with your program’s named data items or machine instructions. If
+that happens, Linux will calmly issue a segmentation fault and your program
+will terminate.
+
+C programs routinely use this free memory space to allocate variables ‘‘on the
+fly’’ in a region called the heap
+
+stack is still quite small: a few hundred bytes at most, and generally less than that.
+
+PUSH pushes a 16-bit or 32-bit register or memory value that is specified by you in your source code.
+PUSHF pushes the 16-bit Flags register onto the stack.
+PUSHFD pushes the full 32-bit EFlags register onto the stack.
+PUSHA pushes all eight of the 16-bit general-purpose registers onto the stack.
+PUSHAD pushes all eight of the 32-bit general-purpose registers onto the stack.
+
+pushf ;push the flags registers
+pusha ;push AX, CX, DX, BX, SP, BP, SI, and DI, in that order, all at once
+pushad;push EAX, ECX, EDX, EBX, ESP, ESP, EBP, ESI, and EDI, all at once
+push ax ; push the AX register
+push [bx] ;push the word stored in memory at BX
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
