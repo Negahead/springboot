@@ -15,9 +15,10 @@ create PROCEDURE show_part_of_day()
                 # set other than binary,and values are sorted and compared based on the collation of the character set.
                 declare cur_time,day_part TEXT;
                 # set:
-                #       user defined variable: set @variable_name = expr, or select @variable_name := expr;
+                #       user defined variable(with '@'): set @variable_name = expr, or select @variable_name := expr;
                 #                              set GLOBAL global_variable = 100; or set SESSION session_variable = 1000,default is session scope
-                #       set local variables in stored object,as it is in this example.
+                #       set local variables in stored object,as it is in this example.no '@'
+                #       server system variable: prefix with '@@'
                 set cur_time = current_time();
                 if cur_time < '12:00:00' THEN
                         set day_part = 'morning';
@@ -45,6 +46,8 @@ create PROCEDURE simpleproc(OUT param1 int)
                 # select ... into var_list,selects column values and store them into variables.
                 select count(1) into param1 from A;
         END;
+call simpleproc(@param);
+select @param;
 
 # routine characteristics that provide  information about the nature of the data use by thr routine.
 # CONTAINS SQL,indicates that the routine does not contain statements that read or write data;
@@ -64,7 +67,7 @@ create FUNCTION average_age(groupId int) RETURNS float READS SQL DATA
 
 # DECIMAL(M,D),M is the maximum number of digits(the precision),range:1-65,D is the number of digits to the right of the decimal point(the scale)
 # CHAR and VARCHAR with a length indicates the maximum number of characters you want to store, CHAR data type column is fixed when you declare it,length
-# can be 0-255,when CHAR values are store,they are right-padded with spaces to the specific length,then CHAR values are retrieved,trailing spaces
+# can be 0-255,when CHAR values are store,they are right-padded with spaces to the specific length,when CHAR values are retrieved,trailing spaces
 # are removed by default.
 # in contrast to CHAR,VARCHAR(0-65535) values are stored as 1-byte or 2-byte length prefix plus data,VARCHAR values are not padded when they are
 # stored,trailing spaces are retained when values are stored and retrieved.
@@ -127,12 +130,34 @@ create TRIGGER tg_a_expdata AFTER INSERT on expdata FOR EACH ROW set log10_value
 # create TRIGGER trigger_name BEFORE|AFTER INSERT|UPDATE|DELETE on tbl_name FOR EACH ROW [FOLLOWS|PRECEDES other_trigger_name] trigger_body
 # it is possible to define multiple triggers for a given table that have the same trigger event and action time.
 # By default, triggers that have the same trigger event and action time activate in the order they were created.
+# OLD.col_name refers to a column of an existing row before it is updated or deleted
+# NEW.col_name refers to a column of a new row to be inserted or an existing row after it is updated
 
+DROP TRIGGER [IF EXISTS] [schema_name.]trigger_name
+
+CREATE
+    [DEFINER = {user | CURRENT_USER}]
+    TRIGGER trigger_name  # all trigger must have a unique name
+    {BEFORE | AFTER}
+    {INSERT | UPDATE | DELETE}
+    on tbl_name for each row  #tbl_name must refer to a permanent table,not view or temporary  table
+    [{FOLLOWS | PRECEDES} other_trigger_name] # if there are multiple triggers for a given table
+    trigger_body # can be BEGIN ... END compound statement
 
 # event:
-# create EVENT event_name ON SCHEDULE schedule DO event_body
-# schedule : AT timestamp [+ INTERVAL interval]... | EVERY interval [STARTS timestamp [ + INTERVAL interval] [ ENDS timestamp [ + INTERVAL interval] ]
-
+CREATE
+    [DEFINER = {user | CURRENT_USER}]
+    EVENT
+    [IF NOT EXISTS]
+    event_name
+    on SCHEDULE schedule
+    [ON COMPLETION [NOT] PRESERVE]
+    [ENABLE | DISABLE | DISABLE ON SLAVE]
+    [COMMENT 'string']
+    DO event_body;
+schedule:
+    AT timestamp [+ INTERVAL interval]...
+    | EVERY interval [STARTS timestamp [+ INTERVAL interval]...] [ENDS timestamp [+INTERVAL interval]...]
 
 # cursor:
 # DECLARE cursor_name CURSOR FOR select_statement,the select statement cannot have an into clause.
@@ -177,8 +202,8 @@ MySQL converts TIMESTAMP values from the current time zone to UTC for storage, a
 
     SELECT current_date(); # 2018-01-17
     select current_time(); # 10:47:20
-    select current_timestamp()
-    select now()
+    select current_timestamp() # 2018-01-25 10:33:18
+    select now() # 2018-01-25 10:33:18
     SELECT TIMESTAMP('2003-12-31') # '2003-12-31 00:00:00'
     select date_format('2017-01-17 12:45:21','%Y-%m-%d %H:%i:%s') # 2017-01-17 12:45:21,as string
     GET_FORMAT({DATE|TIME|DATETIME}, {'EUR'|'USA'|'JIS'|'ISO'|'INTERNAL'}) # date format,as string
@@ -186,6 +211,7 @@ MySQL converts TIMESTAMP values from the current time zone to UTC for storage, a
 
     SELECT FROM_UNIXTIME(1447430881[, format]) # 2015-11-14 00:08:01
     SELECT UNIX_TIMESTAMP('2015-11-13 10:20:19') # 1447431619
+    SELECT UNIT_TIMESTAMP() # 1516847765
 
     SELECT MAKETIME(12,15,30); # '12:15:30'
     SELECT TIME('2003-12-31 01:02:03') # '01:02:03'

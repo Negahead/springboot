@@ -1,0 +1,8 @@
+Aspect: a modularization of a concern that cuts across multiple classes.
+
+Join point: a point during the execution of a program, such as the execution of a method or the handling of an exception.
+In Spring AOP, a join point always represents a method execution.
+
+Advice: action taken by an aspect at a particular join point. Different types of advice include "around,"
+"before" and "after" advice. (Advice types are discussed below.) Many AOP frameworks, including Spring,
+model an advice as an interceptor, maintaining a chain of interceptors around the join point.
