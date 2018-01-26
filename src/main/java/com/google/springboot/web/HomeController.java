@@ -37,8 +37,8 @@ public class HomeController {
     @Autowired
     HomeService homeService;
 
-    @GetMapping("/index")
-    public ResponseResult home(@RequestHeader("user-agent") String userAgent,@RequestHeader("X-AUTH-TOKEN") String token) {
+    @GetMapping(path = "/index/{petId}")
+    public ResponseResult home(@RequestHeader("user-agent") String userAgent,@RequestHeader("X-AUTH-TOKEN") String token,@PathVariable String petId) {
         return homeService.home();
     }
 

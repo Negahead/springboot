@@ -1,6 +1,9 @@
 package com.google.springboot.entity.aspect;
 
+import com.google.springboot.entity.ResponseResult;
+import com.google.springboot.entity.request.OrgOperationRequest;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
@@ -10,6 +13,11 @@ import org.springframework.stereotype.Component;
  *
  * Aspect programming is a way for adding behavior to existing code without modifying
  * that code
+ *
+ * The spring Framework's AOP functionality is normally used in conjunction with the spring IoC container.
+ * Aspects are configured using normal bean definition syntax
+ *
+ * your code never invokes the advice methods of an aspect class.spring does it for you based on you configuration
  */
 @Component
 @Aspect
@@ -46,9 +54,16 @@ public class MyAspect {
      *      target(com.xyz.service.AccountService) :  any join point (method execution only in Spring AOP) where the target object implements the AccountService interface:
      *                                              if you are calling a method on an object,and that object is instance
      *                                              of AccountService
-     *
+     *      ' @target(org.springframework.transaction.annotation.Transactional):
+     *            any join point (method execution only in Spring AOP) where the target object has an @Transactional annotation:
+     *      ' @within(org.springframework.transaction.annotation.Transactional):
+     *            any join point (method execution only in Spring AOP) where the declared type of the target object has an @Transactional annotation
+     *      ' @annotation(org.springframework.transaction.annotation.Transactional):
+     *            any join point (method execution only in Spring AOP) where the executing method has an @Transactional annotation
+     *      ' @args(com.xyz.security.Classified):
+     *            any join point (method execution only in Spring AOP) which takes a single parameter, and where the runtime type of the argument passed has the @Classified annotation
      */
-    @Pointcut("execution(* com.google.springboot.web.AOPController.transfer(..))")
+    @Pointcut("execution(* com.google.springboot.web.AOPController.transfer(java.lang.String,java.util.Map))")
     private void anyOldTransfer() {
     }
 
@@ -69,6 +84,13 @@ public class MyAspect {
     @Pointcut("within(com.google.springboot.web..*)")
     public void inWebLayer() {}
 
+    /**
+     * any join point(method execution in Spring AOP) which takes a single parameter,and where the argument passed at
+     * runtime is Serializable
+     */
+    @Pointcut("args(java.io.Serializable)")
+    public void argsDesigonator() {}
+
 
     /**
      * when the method execution exits
@@ -88,17 +110,64 @@ public class MyAspect {
      */
     @Before("com.google.springboot.entity.aspect.MyAspect.anyOldTransfer()")
     public void beforeAdvice(JoinPoint joinPoint) {
-        for(Object o : joinPoint.getArgs()) {
-            System.out.println(o);
-        }
-        System.out.println(joinPoint.toString());//execution(ResponseResult com.google.springboot.web.AOPController.transfer(String,Map))
-        System.out.println(joinPoint.getKind()); // method-execution
-        System.out.println(joinPoint.getSignature().getDeclaringTypeName()); //com.google.springboot.web.AOPController
-        System.out.println(joinPoint.getSignature().getName()); // transfer
-        System.out.println(joinPoint.getSignature().toString()); //ResponseResult com.google.springboot.web.AOPController.transfer(String,Map)
-        System.out.println(joinPoint.toLongString());
-        Object thisTarget = joinPoint.getThis(); // com.google.springboot.web.AOPController
-        Object target = joinPoint.getTarget();
+        //for(Object o : joinPoint.getArgs()) {
+         //   System.out.println(o);
+        //}
+        //System.out.println(joinPoint.toString());//execution(ResponseResult com.google.springboot.web.AOPController.transfer(String,Map))
+        //System.out.println(joinPoint.getKind()); // method-execution
+        //System.out.println(joinPoint.getSignature().getDeclaringTypeName()); //com.google.springboot.web.AOPController
+        //System.out.println(joinPoint.getSignature().getName()); // transfer
+        //System.out.println(joinPoint.getSignature().toString()); //ResponseResult com.google.springboot.web.AOPController.transfer(String,Map)
+        //System.out.println(joinPoint.toLongString());
+        //Object thisTarget = joinPoint.getThis(); // com.google.springboot.web.AOPController
+        //Object target = joinPoint.getTarget();
         System.out.println("===================before transfer() method call=====================");
+    }
+
+    /**
+     * The first parameter of the advice method must be of type ProceedingJoinPoint,within the body of the advice,calling proceed() on
+     * the ProceedingJoinPoint causes the underlying method to execute,the proceed() method may also be called passing in an Object[]-the values
+     * in the array will be used as the arguments to the method execution when it proceeds.
+     */
+    @Around("execution(* com.google.springboot.web.AOPController.aroundAdvice(..)) && args(name)")
+    public void aroundAdvice(ProceedingJoinPoint proceedingJoinPoint,String name) {
+        System.out.println("name is " + name);
+        ResponseResult result;
+        try {
+            /**
+             * If 'this()' was used in the pointcut for binding, it must be passed first in proceed(..).
+             *
+             * If 'target()' was used in the pointcut for binding, it must be passed next in proceed(..) -
+             * it will be the first argument to proceed(..) if this() was not used for binding.
+             *
+             * Finally come all the arguments expected at the join point, in the order they are supplied at the join point.
+             */
+
+            /**
+             * proceed() will actually call aroundAdvice() method
+             */
+            result = (ResponseResult) proceedingJoinPoint.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        System.out.println("after proceed method..........");
+    }
+
+    /**
+     * the actual OrgOperationRequest object is available to the advice via the orgOperationRequest parameter
+     * @param orgOperationRequest
+     */
+    @Pointcut("execution(* com.google.springboot.web.AOPController.parameterTest(..)) && args(orgOperationRequest,..)")
+    public void parameterPointCut(OrgOperationRequest orgOperationRequest) {}
+
+    /**
+     * in-place point cut expression
+     * @param orgOperationRequest
+     */
+    @Before(value = "execution(* com.google.springboot.web.AOPController.parameterTest(..)) && args(orgOperationRequest,name)",argNames = "orgOperationRequest,name")
+    public void parameterTest(OrgOperationRequest orgOperationRequest,String name) {
+        System.out.println("====================parameter====================================");
+        System.out.println("name is " + name);
+        System.out.println(orgOperationRequest.getUserIds().toString().replace("[","").replace("]",""));
     }
 }

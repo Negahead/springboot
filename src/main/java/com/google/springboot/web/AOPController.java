@@ -1,12 +1,10 @@
 package com.google.springboot.web;
 
 import com.google.springboot.entity.ResponseResult;
+import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.service.AOPService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -26,5 +24,16 @@ public class AOPController {
     public ResponseResult targetAdvice() {
         System.out.println("invoking targetAdvice() method");
         return aopService.targetAdviceTest();
+    }
+
+    @RequestMapping("/aroundAdvice")
+    public ResponseResult aroundAdvice(@RequestParam("name") String name) {
+        System.out.println("invoking aroundAdvice() method");
+        return aopService.aroundAdvice(name);
+    }
+
+    @RequestMapping("/parameterTest")
+    public ResponseResult parameterTest(@RequestBody  OrgOperationRequest request, @RequestParam("name") String name) {
+        return aopService.parameterTest(request,name);
     }
 }
