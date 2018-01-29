@@ -1,11 +1,18 @@
 package com.google.springboot.entity.aspect;
 
+import com.google.springboot.entity.POJO.RedisLog;
 import com.google.springboot.entity.ResponseResult;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.Calendar;
 
 /**
  * classes annotated with @Aspect may have methods and fields just like any other class,they may
@@ -22,6 +29,21 @@ import org.springframework.stereotype.Component;
 @Component
 @Aspect
 public class MyAspect {
+
+    private static final String KEY = "mylog";
+
+    /**
+     * use this for logger
+     */
+    @Autowired
+    RedisTemplate<String,Object> redisTemplate;
+    private ListOperations<String,Object> opsForList;
+
+
+    @PostConstruct
+    public void init() {
+        this.opsForList = redisTemplate.opsForList();
+    }
     /**
      * spring AOP only supports method execution join points for spring beans,so you can think
      * of a pointcut as matching the execution of methods on spring beans
@@ -81,8 +103,8 @@ public class MyAspect {
      *
      * in contrast to execution,this is more like a generic method find.
      */
-    @Pointcut("within(com.google.springboot.web..*)")
-    public void inWebLayer() {}
+    @Pointcut("within(com.google.springboot.web.AOPController)")
+    public void inAOPControllerLayer() {}
 
     /**
      * any join point(method execution in Spring AOP) which takes a single parameter,and where the argument passed at
@@ -95,13 +117,22 @@ public class MyAspect {
     /**
      * when the method execution exits
      */
-    @After("inWebLayer()")
-    public void afterInWebLayer() {
+    //@AfterReturning("inAOPControllerLayer()")
+    public void afterInWebLayer(JoinPoint joinPoint) {
+        RedisLog redisLog = new RedisLog();
+        redisLog.setTime(Calendar.getInstance().getTime().toString());
+        redisLog.setLevel("Info");
+        redisLog.setApplication("MyProject");
+        redisLog.setSubApplication(joinPoint.getSignature().toString());
+        opsForList.leftPush(KEY,redisLog);
         System.out.println("=====================after any join point in web layer==========================");
     }
 
-    @After("target(com.google.springboot.service.AOPService)")
-    public void thisPointCut() {
+    //@After("target(com.google.springboot.service.AOPService)")
+    public void thisPointCut(JoinPoint joinPoint) {
+        Object th = joinPoint.getThis();
+        Object tar = joinPoint.getTarget();
+        Object[] args = joinPoint.getArgs();
         System.out.println("=====================target in of type AOPService==========================");
     }
 
@@ -169,5 +200,32 @@ public class MyAspect {
         System.out.println("====================parameter====================================");
         System.out.println("name is " + name);
         System.out.println(orgOperationRequest.getUserIds().toString().replace("[","").replace("]",""));
+    }
+
+    @After("this(com.google.springboot.interfaces.EmptyInterface)")
+    public void WhatIsThis(JoinPoint joinPoint) {
+        Object th = joinPoint.getThis();
+        Object tar = joinPoint.getTarget();
+        System.out.println("................................this implements some interface.................................");
+    }
+
+    //@After("target(com.google.springboot.interfaces.EmptyInterface)")
+    public void WhatIsTarget(JoinPoint joinPoint) {
+        Object th = joinPoint.getThis();
+        Object tar = joinPoint.getTarget();
+        System.out.println("................................target implements some interface.................................");
+    }
+
+    @After("@within(org.springframework.transaction.annotation.Transactional)")
+    public void withinAnnotation() {
+        System.out.println("within annotation...........................");
+    }
+
+    /**
+     * method annotated with Transactional
+     */
+    //@After("@annotation(org.springframework.transaction.annotation.Transactional)")
+    public void anno() {
+        System.out.println("point cut with annotation");
     }
 }

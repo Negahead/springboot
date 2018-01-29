@@ -5,6 +5,7 @@
 <mapper namespace="com.google.springboot.mapper.r.UserInfoRMapper">
     <select id="getUserInfo" resultType="com.google.springboot.entity.response.UserInfoResponse">
         select userId,userName,userPwd from mis_user_info where userId=104
+#         sdfdf
     </select>
 
     <!--
