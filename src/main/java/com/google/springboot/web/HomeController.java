@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 
 // The key difference between a traditional spring MVC controller and the RESTful controller
@@ -177,5 +179,10 @@ public class HomeController {
     @RequestMapping(path = "/mysqlDateTime")
     public ResponseResult mysqlDateTime(){
         return homeService.mysqlDateTime();
+    }
+
+    @RequestMapping(path = "/withPython",method = RequestMethod.GET)
+    public ResponseResult withPython(@RequestHeader Map<String,String> headers, @RequestParam String name) {
+        return new ResponseResult<>("Hi python!");
     }
 }

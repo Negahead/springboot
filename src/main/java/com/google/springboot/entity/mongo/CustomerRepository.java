@@ -28,7 +28,7 @@ import java.util.List;
 public interface CustomerRepository extends MongoRepository<Customer,String>{
     /**
      * Spring Data MongoDB uses the MongoTemplate to execute the queries behind your find* methods.
-     * The repository proxy has two ways to derive a store-specific query from the mothod name:It can derive
+     * The repository proxy has two ways to derive a store-specific query from the method name:It can derive
      * the query from the method name directly,or by using a manually defined query.
      *
      */

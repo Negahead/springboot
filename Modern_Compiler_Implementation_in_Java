@@ -1,0 +1,8 @@
+Instead, we treat the stack as a big array, with a special register - the stack pointer - that points at some location.
+All locations beyond the stack pointer are considered to be garbage, and all locations before the stack pointer are
+considered to be allocated. The stack usually grows only at the entry to a function, by an increment large enough to
+hold all the local variables for that function, and, just before the exit from the function, shrinks by the same amount.
+The area on the stack devoted to the local variables, parameters, return address, and other temporaries for a function
+is called the function's activation record or stack frame. For historical reasons, run-time stacks usually start at a
+high memory address and grow toward smaller addresses. This can be rather confusing: Stacks grow downward and
+shrink upward, like icicles.

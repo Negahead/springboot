@@ -935,32 +935,73 @@ push ax ; push the AX register
 push [bx] ;push the word stored in memory at BX
 
 
+popf ; Pop the top 2 bytes from the stack into Flags
+popa ;Pop the top 16 bytes from the stack into AX, CX, DX, BX,
+      BP, SI, and DI...but NOT SP!
+popad ;Pop the top 32 bytes from the stack into EAX, ECX, EDX, EBX,
+       EBP, ESI and EDI...but NOT ESP!!!
+pop cx ; Pop the top 2 bytes from the stack into CX
+pop esi ; Pop the top 4 bytes from the stack into ESI
+pop [ebx] ; Pop the top 4 bytes from the stack into memory at EBX
 
 
+Popping the stack into a 32-bit register takes the top four bytes off the stack. Note well
+that nothing in the CPU or in Linux remembers the size of the data items that
+you place on the stack. It’s up to you to know the size of the last item pushed onto
+the stack.
+
+When a POP instruction is executed, things work in this order: first, the
+data at the address currently stored in ESP (whether 16 bits or 32 bits’ worth,
+depending on the operand) is copied from the stack and placed in POP ’s
+operand, whatever you specified that to be. After that, ESP is incremented
+(rather than decremented) by the size of the operand, so that in effect ESP
+moves either two or four bytes up the stack, away from low memory.
+
+Unless the stack is completely empty, SP points to real data, not empty space.
+
+That’s a mighty roundabout way to copy the value of CX into DX. MOV DX , CX
+is a lot faster and more straightforward. However, moving register values via
+the stack is sometimes necessary. Remember that the MOV instruction will not
+operate on the Flags or EFlags registers. If you want to load a copy of Flags or
+EFlags into a register, you must first push Flags or EFlags onto the stack with
+PUSHF or PUSHFD , and then pop the flags’ values off the stack into the register
+of your choice with POP .
+
+At the very start of x86 memory, down at segment 0, offset 0, is a special
+lookup table with 256 entries. Each entry is a complete memory address
+including segment and offset portions, for a total of 4 bytes per entry. The first
+1,024 bytes of memory in any x86 machine are reserved for this table, and no
+other code or data may be placed there.
+
+Each of the addresses in the table is called an interrupt vector. The table as a
+whole is called the interrupt vector table. Each vector has a number, from 0 to
+255. The vector occupying bytes 0 through 3 in the table is vector 0. The vector
+occupying bytes 4 through 7 is vector 1, and so on
 
 
+When your machine starts up, Linux and BIOS fill many of
+the slots in the interrupt vector table with addresses of certain service routines
+within themselves. Each version of Linux knows the location of its innermost
+parts, and when you upgrade to a new version of Linux, that new version
+will fill the appropriate slots in the interrupt vector table with upgraded and
+accurate addresses.
 
+When Linux loads at boot time, one of
+the many things it does to prepare the machine for use is put correct addresses
+in several of the vectors in the interrupt vector table. One of these addresses is
+the address of the kernel services dispatcher, which goes into slot 80h.
 
+When an INT 80h instruction is executed, the CPU goes down to
+the interrupt vector table, fetches the address from slot 80h, and then jumps
+execution to that address. The transition from user space to kernel space is
+clean and completely controlled.
 
+Later, when you type the name of your program eatsyscall on the Linux
+console command line, Linux loads the eatsyscall executable into user space
+memory and allows it to execute. To gain access to kernel services, eatsyscall
+executes INT 80h instructions as needed.
 
+the Linux kernel services dispatcher controls access to 200 individual
+service routines. How does it know which one to execute?
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+mov eax,4 sys _ write , service number 4

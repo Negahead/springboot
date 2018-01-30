@@ -1,0 +1,95 @@
+What Are Assemblers and Linkers? An assembler is a utility program that converts source
+code programs from assembly language into machine language. A linker is a utility program that
+combines individual files created by an assembler into a single executable program. A related
+utility, called a debugger, lets you to step through a program while it’s running and examine reg-
+isters and memory.
+
+
+Machine language is
+a numeric language specifically understood by a computer’s processor (the CPU). All x86
+processors understand a common machine language. Assembly language consists of statements
+written with short mnemonics such as ADD, MOV, SUB, and CALL. Assembly language has a
+one-to-one relationship with machine language: Each assembly language instruction corresponds
+to a single machine-language instruction.
+
+High-level languages such as
+C++ and Java have a one-to-many relationship with assembly language and machine language.
+A single statement in C++ expands into multiple assembly language or machine instructions. We
+can show how C++ statements expand into machine code. Most people cannot read raw machine
+code, so we will use its closest relative, assembly language.
+
+A bus is a group of parallel wires that transfer data from one part of the computer to another.
+A computer system usually contains four bus types: data, I/O, control, and address.
+the data bus transfers instructions and data between the CPU and memory
+The I/O bus transfers data
+between the CPU and the system input/output devices. The control bus uses binary signals to
+synchronize actions of all devices attached to the system bus. The address bus holds the
+addresses of instructions and data when the currently executing instruction transfers data
+between the CPU and memory.
+
+A multitasking operating system is able to run multiple tasks at the same time. A task is defined
+as either a program (a process) or a thread of execution. A process has its own memory area
+and may contain multiple threads. A thread shares its memory with other threads belonging to
+the same process.
+
+A preemptive multitasking OS (such as
+Windows XP or Linux) permits a higher-priority task to interrupt a lower-priority one, leading to
+better system stability.
+
+In 32-bit protected mode, a task or program can address a linear address space of up to 4 GBytes.
+
+Real-address mode programs, on the other hand, can only address a range of 1 MByte.
+
+There are eight general-purpose registers, six segment registers, a
+processor status flags register (EFLAGS), and an instruction pointer (EIP).
+
+32-bit general-purpose registers:
+    EAX,EBX,ECX,EDX,EBP,ESI,EDI,ESP
+    The general-purpose registers are primarily used for arith-
+    metic and data movement
+
+    EAX is automatically used by multiplication and division instructions. It is often called the
+    extended accumulator register.
+    • The CPU automatically uses ECX as a loop counter.
+    • ESP addresses data on the stack (a system memory structure). It is rarely used for ordinary
+    arithmetic or data transfer. It is often called the extended stack pointer register.
+    • ESI and EDI are used by high-speed memory transfer instructions. They are sometimes called
+    the extended source index and extended destination index registers.
+    • EBP is used by high-level languages to reference function parameters and local variables on
+    the stack. It should not be used for ordinary arithmetic or data transfer except
+16-bit segment registers:
+    CS,ES,SS,FS,DS,GS
+processor status flags register (EFLAGS), and an instruction pointer (EIP).
+    EFLAGS,EIP
+
+
+Segment Registers In real-address mode, 16-bit segment registers indicate base addresses of
+preassigned memory areas named segments. In protected mode, segment registers hold pointers
+to segment descriptor tables. Some segments hold program instructions (code), others hold vari-
+ables (data), and another segment named the stack segment holds local function variables and
+function parameters.
+
+Instruction Pointer The EIP, or instruction pointer, register contains the address of the next
+instruction to be executed. Certain machine instructions manipulate EIP, causing the program to
+branch to a new location.
+
+In real-address mode, only 1 MByte of memory can be addressed, from hexadecimal 00000
+to FFFFF. The processor can run only one program at a time, but it can momentarily interrupt
+that program to process requests (called interrupts) from peripherals. Application programs are
+permitted to access any memory location, including addresses that are linked directly to system
+hardware. The MS-DOS operating system runs in real-address mode, and Windows 95 and 98
+can be booted into this mode.
+
+In protected mode, the processor can run multiple programs at the same time. It assigns each
+process (running program) a total of 4 GByte of memory. Each program can be assigned its own
+reserved memory area, and programs are prevented from accidentally accessing each other’s
+code and data. MS-Windows and Linux run in protected mode.
+
+
+In real-address mode, an x86 processor can access 1,048,576 bytes of memory (1 MByte) using
+20-bit addresses in the range 0 to FFFFF hexadecimal. Intel engineers had to solve a basic
+
+
+
+
+
