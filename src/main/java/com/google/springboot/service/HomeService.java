@@ -69,7 +69,6 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
  *
  * only public methods should be annotated with @Transactional.
  */
-@Transactional
 public class HomeService {
     @Autowired
     UserInfoRMapper userInfoRMapper;
@@ -140,6 +139,7 @@ public class HomeService {
         return new ResponseResult<>("");
     }
 
+    @Transactional
     public ResponseResult transferOrgCrew(OrgOperationRequest request) {
         if(request.getUserIds() == null || request.getUserIds().isEmpty()) {
             return new ResponseResult<>(ErrorCodeEnum.PARAMETER_ERROR);
@@ -283,8 +283,25 @@ public class HomeService {
          * template.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(Object.class));
          */
         HashOperations<String, String, Object> hashOps = redisTemplate.opsForHash();
+        /**
+         * o is 1 as Integer
+         */
         Integer o = (Integer)hashOps.get("myhash", "Clair Foy");
+        /**
+         * hset myhash "From" "China"
+         */
+        Integer from = (Integer) hashOps.get("myhash","From");
         hashOps.put("myhash","Conan",45);
+        Tree tree = new Tree();
+        tree.setName("Common ash");
+        tree.setHeight(18);
+        tree.setReigon("Europe");
+
+        /**
+         * get and set json object
+         */
+        hashOps.putIfAbsent("myhash1","treeObj",tree);
+        Map<String,String> o1 = (Map)hashOps.get("myhash1", "treeObj");
         Map<String, Object> entries = hashOps.entries("myhash");
         if(entries != null) {
             return new ResponseResult<>(entries);
