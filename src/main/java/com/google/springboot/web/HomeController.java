@@ -200,6 +200,7 @@ public class HomeController {
      * application/pdf
      * application/json
      * application/zip
+     * application/vnd.ms-excel
      * text/plain
      * text/html
      * image/jpeg
@@ -254,6 +255,19 @@ public class HomeController {
             response.setHeader("Content-length",String.valueOf(file.length()));
             FileCopyUtils.copy(in,response.getOutputStream());
         }
+    }
+
+    /**
+     * HSSF is the POI Project's pure Java implementation of the Excel '97(-2007) (.xls)file format
+     * XSSF is the POI Project's pure Java implementation of the Excel 2007 OOXML (.xlsx) file format.
+     *
+     * HWPF is the name of our port of the Microsoft Word 97(-2007) file format to pure Java.
+     * XWPF is the partner to HWPF for the new Word 2007 .docx format is XWPF.
+     * @param response
+     */
+    @RequestMapping(path = "/createAndDownloadExcel",method = RequestMethod.GET,produces = "application/vnd.ms-excel")
+    public void createAndDownloadExcel(HttpServletResponse response) {
+
     }
 
 }
