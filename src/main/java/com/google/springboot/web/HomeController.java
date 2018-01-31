@@ -5,6 +5,9 @@ import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.service.HomeService;
 import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.util.LittleEndian;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -275,12 +279,53 @@ public class HomeController {
      */
     @RequestMapping(path = "/createAndDownloadExcel",method = RequestMethod.GET,produces = "application/vnd.ms-excel")
     public void createAndDownloadExcel(HttpServletResponse response) throws IOException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         HSSFWorkbook workbook = new HSSFWorkbook();
         HSSFSheet sheet = workbook.createSheet("my sheet");
-        HSSFRow row = sheet.createRow(0);
-        for(int i = 0; i < 10 ; i ++) {
-            HSSFCell cell = row.createCell(i);
-            cell.setCellValue("Stay");
+        sheet.setDefaultColumnWidth(20);
+//        sheet.setDefaultRowHeight((short) 3);
+        /**
+         * Create a new Cell style and add it to the workbook's style table.
+         * You can define up to 4000 unique styles in a .xls workbook.
+         */
+        HSSFCellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderBottom(BorderStyle.DASH_DOT);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        /**
+         * setting to one fills the cell with the foreground color... or no color presentation
+         */
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellStyle.setFillForegroundColor(HSSFColor.HSSFColorPredefined.BLUE.getIndex());
+        cellStyle.setVerticalAlignment(VerticalAlignment.BOTTOM);
+        /**
+         * horizon center
+         */
+        cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        for(int j = 0 ; j < 10 ; j++) {
+            HSSFRow row = sheet.createRow(j);
+            /**
+             * Applies a whole-row cell styling to the row.
+             */
+//            row.setRowStyle(cellStyle);
+            for(int i = 0; i < 10 ; i ++) {
+                HSSFCell cell = row.createCell(i, CellType.STRING);
+                cell.setCellStyle(cellStyle);
+                cell.setCellValue("Stay");
+                if(i == 9) {
+                    HSSFPatriarch drawingPatriarch = sheet.createDrawingPatriarch();
+                    /**
+                     * A client anchor is attached to an excel worksheet.  It anchors against a top-left and buttom-right cell.
+                     */
+                    HSSFComment cellComment = drawingPatriarch.createCellComment(new HSSFClientAnchor(0,0,0,0,(short) 11,0,(short) 13,3));
+                    cellComment.setString(new HSSFRichTextString("what a lovely day,never fall in love again!"));
+                    cellComment.setAuthor("Will");
+                    /**
+                     * Assign a comment to this cell.
+                     */
+                    cell.setCellComment(cellComment);
+                    cell.setCellValue(simpleDateFormat.format(Calendar.getInstance().getTime()));
+                }
+            }
         }
         response.setContentType("application/vnd.ms-excel");
         response.setHeader("Content-Disposition","attachment; filename=excel.xls");
