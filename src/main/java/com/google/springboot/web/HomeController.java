@@ -85,7 +85,7 @@ public class HomeController {
      * @return
      */
     @RequestMapping(value = "/mongodb",method = RequestMethod.POST)
-    public ResponseResult invokeMongoDB(@RequestParam("param") String operator) {
+    public ResponseResult invokeMongoDB(@RequestParam("param") String operator,@RequestParam("curl") String curl) {
         return homeService.invokeMongoDB();
     }
 
@@ -221,6 +221,41 @@ public class HomeController {
      * audio/mpeg
      * video/mp4
      * application/octet-stream    // unknown binary data,propose as a 'save as' file
+     */
+
+
+    /**
+     * A few more things about HTTP headers:
+     *      Origin: Origin request headers indicates where a fetch originates from.It doesn't include any path information,
+     *              but only the server name
+     *              Origin: <scheme> "://" <hostname> [":" <port>]
+     *              Origin: http://www.google.com
+     *
+     *              the Origin header tells the server that the client code originated from http://www.google.com
+     *              so it checks its same-origin policies and determines that it can serve the request.
+     *
+     *              The same-origin policy is an important security concept implemented by web browsers to prevent Javascript
+     *              code from making requests against a different origin(different domain) than the one from which it was served.
+     *              Although the same-origin policy is effective in preventing resources from different origins,
+     *              it also prevents legitimate interactions between a server and clients of a known and trusted origin.
+     *
+     *              Cross-Origin Resource Sharing (CORS) is a technique for relaxing the same-origin policy,
+     *              allowing Javascript on a web page to consume a REST API served from a different origin.
+     *
+     *              The server will consider the request's Origin and either allow or disallow the request.
+     *              If the server allows the request, then it will respond with the requested resource and an
+     *              Access-Control-Allow-Origin header in the response. This header will indicate to the client which
+     *              client origins will be allowed to access the resource. Assuming that the Access-Control-Allow-Origin
+     *              header matches the request's Origin, the browser will allow the request.
+     *
+     *              On the other hand, if Access-Control-Allow-Origin is missing in the response or if it doesn't match
+     *              the request's Origin, the browser will disallow the request.
+     *
+     *      Referer:
+     *              request header contains the address of the previous web page from which a link currently requested page
+     *              was followed.you should not trust the HTTP Referer for any matter of importance
+     *
+     *
      */
     @RequestMapping(path = "/download",method = RequestMethod.GET,produces = "application/pdf")
     public void download(HttpServletResponse response) throws IOException {

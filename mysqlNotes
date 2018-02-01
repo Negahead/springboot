@@ -291,6 +291,10 @@ FROM t2;
 6 rows in set (0.00 sec)
 
 
+outer_expr IN (SELECT inner_expr FROM ... WHERE subquery_where)
+MySQL evaluates queries “from outside to inside.” That is, it first obtains the value of the outer expression outer_expr,
+and then runs the subquery and captures the rows that it produces.
+
 
 
 

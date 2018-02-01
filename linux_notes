@@ -53,3 +53,80 @@ sftp name@hostname
 
 # download file via ssh
 scp -P 21098 /home/localuser/site/example.html cpanel_user@servername:/home/cpanel_user/public_html
+
+
+
+===============================================curl=====================================================================
+curl [OPTIONS] [URL...]
+URL syntax:
+     http://site.{one,two,three}.com
+     ftp://ftp.example.com/file[1-100].txt
+     ftp://ftp.example.com/file[001-100].txt
+     ftp://ftp.example.com/file[a-z].txt
+     http://example.com/file[1-100:10].txt
+     http://example.com/file[a-z:2].txt
+
+options:
+    -K,--config <file>:
+        Specify a text file to read curl arguments from. The command line arguments found in the text file will be used as if they were provided on the command line.
+    --compressed:
+        (HTTP) Request a compressed response using one of the algorithms curl supports, and save the uncompressed document.
+    -c,--cookie-jar <filename>:
+        (HTTP) Specify to which file you want curl to write all cookies after a completed operation.
+    -d,--data <data>:
+        always use post!
+        (HTTP) Sends the specified data in a POST request to the HTTP server, in the same way that a browser does when
+        a user has filled in an HTML form and presses the submit button. This will cause curl to pass the data to the
+        server using the content-type application/x-www-form-urlencoded.
+
+        curl -d "operator=will" -d "curl=curl" http://localhost:8080/home/mongodb // request method is post
+
+        posting data from a file named 'foobar' would thus be done -d,--data @foobar
+    --data-raw:
+        similar to -d,--data but without the special interpretation of the @ Character.
+
+    --dns-server <address>:
+        Set the list of DNS servers to be used instead of the system default. The list of IP addresses should be
+        separated with commas. Port numbers may also optionally be given as :<port-number> after each IP address.
+    -D,--dump-header <filename>:
+        (HTTP FTP) Write the received protocol headers to the specified file.
+
+        curl --compressed -c cookie -H "cookie: cookie1=will" -D header http://localhost:8080/home/cookie
+        cat header
+        HTTP/1.1 200
+        Set-Cookie: cookie1=will; Path=/home
+        Content-Type: application/json;charset=UTF-8
+        Transfer-Encoding: chunked
+        Date: Thu, 01 Feb 2018 10:16:42 GMT
+    -F,--form <name=content>:
+        (HTTP SMTP IMAP) For HTTP protocol family, this lets curl emulate a filled-in form in which a user has pressed the submit button.
+
+        This enables uploading of binary files etc. To force the 'content' part to be a file, prefix the file name with an @ sign
+        To just get the content part from a file, prefix the file name with the symbol <. The difference between @ and < is
+        that @ makes a file get attached in the post as a file upload, while the < makes a text field and just get the contents for that text field from a file.
+
+        send an image to an HTTP server:
+            curl -F profile=@potrait.jpg http://localhost:8080/upload
+            curl -F "profile=@potrait.jpg;type=image/jpeg" http://localhost:8080/upload
+    -G,--get:
+        When used, this option will make all data specified with -d, --data, --data-binary or --data-urlencode to be
+        used in an HTTP GET request instead of the POST request that otherwise would be used. The data will be appended to the URL with a '?' separator.
+
+    -I,--head:
+        (HTTP FTP FILE) Fetch the headers only! HTTP-servers feature the command HEAD which this uses to get nothing but
+        the header of a document. When used on an FTP or FILE file, curl displays the file size and last modification time only.
+
+        curl --head localhost:8080/home/redisNewHash
+        HTTP/1.1 400
+        Content-Type: application/json;charset=UTF-8
+        Transfer-Encoding: chunked
+        Date: Thu, 01 Feb 2018 10:31:55 GMT
+        Connection: close
+    -H,--header <header/@file>
+    -i,--include:
+        Include the HTTP response headers in the output. The HTTP response headers can include things like server name, cookies, date of the document, HTTP version and more...
+    -r,--range range:
+        (HTTP FTP SFTP FILE) Retrieve a byte range (i.e a partial document) from a HTTP/1.1, FTP or SFTP server or a local FILE. Ranges can be specified in a number of ways.
+    -X,--request <method>
+    -o,,--output
+
