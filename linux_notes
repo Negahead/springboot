@@ -71,6 +71,8 @@ options:
         Specify a text file to read curl arguments from. The command line arguments found in the text file will be used as if they were provided on the command line.
     --compressed:
         (HTTP) Request a compressed response using one of the algorithms curl supports, and save the uncompressed document.
+    -b,--cookie <name=data>:
+        Pass the data to HTTP server as a cookie,"name1=value1; name2=value2"
     -c,--cookie-jar <filename>:
         (HTTP) Specify to which file you want curl to write all cookies after a completed operation.
     -d,--data <data>:
@@ -84,6 +86,9 @@ options:
         posting data from a file named 'foobar' would thus be done -d,--data @foobar
     --data-raw:
         similar to -d,--data but without the special interpretation of the @ Character.
+    --data-binary:
+        HTTP Posts data exactly as specified with no extra processing whatsoever.
+        If you start the data with the letter @, the rest should be a filename
 
     --dns-server <address>:
         Set the list of DNS servers to be used instead of the system default. The list of IP addresses should be
@@ -100,6 +105,7 @@ options:
         Date: Thu, 01 Feb 2018 10:16:42 GMT
     -F,--form <name=content>:
         (HTTP SMTP IMAP) For HTTP protocol family, this lets curl emulate a filled-in form in which a user has pressed the submit button.
+        This causes curl to POST data using the Content-Type multipart/form-data
 
         This enables uploading of binary files etc. To force the 'content' part to be a file, prefix the file name with an @ sign
         To just get the content part from a file, prefix the file name with the symbol <. The difference between @ and < is
@@ -127,6 +133,21 @@ options:
         Include the HTTP response headers in the output. The HTTP response headers can include things like server name, cookies, date of the document, HTTP version and more...
     -r,--range range:
         (HTTP FTP SFTP FILE) Retrieve a byte range (i.e a partial document) from a HTTP/1.1, FTP or SFTP server or a local FILE. Ranges can be specified in a number of ways.
+        0-499     specifies the first 500 bytes
+        -500      specifies the last 500 bytes
+        9500-     specifies the bytes from offset 9500 and forward
+        100-199,500-599    specifies two separate 100-byte ranges(*) (HTTP)
+    -T,--upload-file <file>
+        curl -T "{file1,file2}" http://www.uploadtothissite.com
+        curl -T "img[1-1000].png" ftp://ftp.picturemania.com/upload/
     -X,--request <method>
-    -o,,--output
+    -o,--output
+
+
+    curl -H "Content-type:application/json;UTF-8" -d '{"userName":"system1","userPwd":"f379eaf3c831b04de153469d1bec345e"}' -i -D header localhost:9000/auth/token
+    curl -H "Content-type: application/json;charset=UTF-8" -H "X-AUTH-TOKEN: 31D0A860-D603-413E-B430-20CCA5273E2F" -X POST -i -d '{"orgId":1,"orgName":"一米辅导"}' localhost:9000/biz/workOrder/userListByOrganization
+    curl -H "Content-type: application/json;charset=UTF-8" -H "X-AUTH-TOKEN: 31D0A860-D603-413E-B430-20CCA5273E2F" -X POST -i -d '{"userNm":"system1"}' localhost:9000/biz/workOrder/userListByErp
+    curl -H "Content-type: application/json;charset=UTF-8" -H "X-AUTH-TOKEN: 31D0A860-D603-413E-B430-20CCA5273E2F" -H "X-AUTH-UID: 104" -X POST -d '{}' localhost:9000/biz/workOrder/organizationList | json_pp
+
+
 
