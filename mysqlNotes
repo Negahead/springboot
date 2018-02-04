@@ -295,19 +295,382 @@ outer_expr IN (SELECT inner_expr FROM ... WHERE subquery_where)
 MySQL evaluates queries “from outside to inside.” That is, it first obtains the value of the outer expression outer_expr,
 and then runs the subquery and captures the rows that it produces.
 
+========================================High Performance MySQL=========================================================
+    Avoid NULL if possible:
+        It’s usually best to specify columns as NOT NULL unless you intend to store NULL in them.
+
+        It’s harder for MySQL to optimize queries that refer to nullable columns, because
+        they make indexes, index statistics, and value comparisons more complicated. A
+        nullable column uses more storage space and requires special processing inside
+        MySQL
+
+    Number:
+        TINYINT[ UNSIGNED]     8   bit
+        SMALLINT               16  bit
+        MEDIUMINT              24  bit
+        INT                    32  bit
+        BIGINT                 64  bit
+
+        INT(11) is meaningless,it does not restrict the legal range of values, but simply specifies
+        the number of characters MySQL’s interactive tools will reserve for display purposes.
+    Decimal and floating point number:
+        DECIMAL(18,9) will store nine digits from each side of the decimal point
+
+        floating point values are approximate and not stored as exact values,attempts to treat them
+        as exact in comparisons may lead to problems
+
+        A precision from 0 to 23 results in a 4-byte single-precision FLOAT column FLOAT(M,D)
+        A precision from 24 to 53 results in an 8-byte double-precision DOUBLE column. DOUBLE(M.D)
+
+        Floating-point types typically use less space than DECIMAL to store the same range of
+        values. A FLOAT column uses four bytes of storage. DOUBLE consumes eight bytes and has
+        greater precision and a larger range of values than FLOAT .
+
+        Because of the additional space requirements and computational cost, you should use
+        DECIMAL only when you need exact results for fractional numbers
+    String types:
+        VARCHAR uses 1 or 2 extra bytes to record the value’s length: 1 byte if the column’s
+        maximum length is 255 bytes or less, and 2 bytes if it’s more.
+        In version 5.0 and newer, MySQL preserves trailing spaces when you store and
+        retrieve values
+
+        It’s usually worth using VARCHAR when the maximum column length is much larger
+        than the average length;
+
+        varchar(3) can store '第三方'
+
+        CHAR is useful if you want to store very short strings, or if all the values are nearly
+        the same length.When storing a CHAR value, MySQL removes any trailing spaces.
+        Values are padded with spaces as needed for comparisons.
+
+        CHAR is also better than VARCHAR for data that’s changed frequently, because a fixed-length
+        row is not prone to fragmentation. For very short columns, CHAR is also more efficient than
+        VARCHAR ; a CHAR(1) designed to hold only Y and N values will use only one byte in a single-byte character
+        set, 1 but a VARCHAR(1) would use two bytes because of the length byte.
+
+        The sibling types for CHAR and VARCHAR are BINARY and VARBINARY , which store binary
+        strings. Binary strings are very similar to conventional strings, but they store bytes
+        instead of characters. Padding is also different: MySQL pads BINARY values with \0 (the
+        zero byte) instead of spaces and doesn’t strip the pad value on retrieval.
+
+        MySQL literally compares BINARY strings one byte at a time, according to the numeric value
+        of each byte. As a result, binary comparisons can be much simpler than character comparisons,
+        so they are faster.
+
+        BLOB and TEXT are string data types designed to store large amounts of data as either
+        binary or character strings, respectively.
+
+        MySQL sorts BLOB and TEXT columns differently from other types: instead of sorting the
+        full length of the string, it sorts only the first max_sort_length bytes of such columns.
+        If you need to sort by only the first few characters, you can either decrease the
+        max_sort_length server variable or use ORDER BY SUBSTRING ( column, length ).
+
+    Using ENUM instead of a string type:
+        mysql> CREATE TABLE enum_test(e ENUM('fish','apple','dog') NOT NULL);
+        mysql> INSERT INTO enum_test(e) values ('fish'),('dog'),('apple');
+        The three rows actually store integers, not strings. as (0,1,2), also sort by this when use ORDER BY e
+
+
+    Date and Time types:
+
+           DATETIME:
+           from year 1001 to 9999, with a precision of one second,it stores the date and time
+           packed into a integer in YYYYMMDDHHMMSS format,this uses eight bytes of storage space
+           example 2018-02-03 14:25:34
+
+           TIMESTAMP:
+           The TIMESTAMP type stores the number of seconds elapsed since midnight 1970-01-01,TIMESTAMP
+           uses only four bytes of storage,so it has a much smaller range than DATATIME
+           from '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC.
+
+           TIMESTAMP also has special properties that DATETIME doesn’t have. By default,
+           MySQL will set the first TIMESTAMP column to the current time when you insert a
+           row without specifying a value for the column. 4 MySQL also updates the first
+           TIMESTAMP column’s value by default when you update the row, unless you assign
+           a value explicitly in the UPDATE statement. You can configure the insertion and
+           update behaviors for any TIMESTAMP column. Finally, TIMESTAMP columns are NOT
+           NULL by default, which is different from every other data type.
+
+    BIT:
+        You can use a BIT column to store one or many true/false values in a single column.
+        BIT(1) defines a field that contains a single bit, BIT(2) stores 2 bits, and so on; the
+        maximum length of a BIT column is 64 bits.
+
+
+    Indexing for High Performance:
+        indexes are a way to avoid scanning the full table to obtain the result that you're looking for.
+        For InnoDB, the most common index type is the B+Tree based index, that stores the elements in a sorted order.
+        Also, you don't have to access the real table to get the indexed values, which makes your query return way faster.
+
+        The "problem" about this index type is that you have to query for the leftmost value to use the index. So,
+        if your index has two columns, say last_name and first_name, the order that you query these fields
+        matters a lot.
+
+        An index contains values from one or more columns in a table. If you index more than
+        one column, the column order is very important, because MySQL can only search
+        efficiently on a leftmost prefix of the index. Creating an index on two columns is not
+        the same as creating two separate single-column indexes,
+
+        The main idea of using B-Trees is to reduce the number of disk accesses. Most of the tree operations
+        (search, insert, delete, max, min, ..etc ) require O(h) disk accesses where h is height of the tree.
+        B-tree is a fat tree. Height of B-Trees is kept low by putting maximum possible keys in a B-Tree node.
+        Generally, a B-Tree node size is kept equal to the disk block size. Since h is low for B-Tree,
+        total disk accesses for most of the operations are reduced significantly compared to balanced Binary
+        Search Trees like AVL Tree, Red Black Tree, ..etc.
+
+        Each internal node of a B-tree contains a number of keys. The keys act as separation values which divide its
+        subtrees. For example, if an internal node has 3 child nodes (or subtrees) then it must have 2 keys: a1 and a2.
+        All values in the leftmost subtree will be less than a1, all values in the middle subtree will be between
+        a1 and a2, and all values in the rightmost subtree will be greater than a2.
+
+        Large databases have historically been kept on disk drives. The time to read a record on a disk drive far
+        exceeds the time needed to compare keys once the record is available. The time to read a record from a disk
+        drive involves a seek time and a rotational delay. The seek time may be 0 to 20 or more milliseconds,
+        and the rotational delay averages about half the rotation period. For a 7200 RPM drive, the rotation
+        period is 8.33 milliseconds. For a drive such as the Seagate ST3500320NS, the track-to-track seek time
+        is 0.8 milliseconds and the average reading seek time is 8.5 milliseconds.[5] For simplicity, assume
+        reading from disk takes about 10 milliseconds.Naively, then, the time to locate one record out of a
+        million would take 20 disk reads times 10 milliseconds per disk read, which is 0.2 seconds.
+
+        The storage engine can’t optimize accesses with any columns to the right of the
+        first range condition. For example, if your query is WHERE last_name="Smith" AND
+        first_name LIKE 'J%' AND dob='1976-12-23' , the index access will use only the
+        first two columns in the index, because the LIKE is a range condition
+
+        Finally, the index actually stores a copy of the values, so some queries
+        can be satisfied from the index alone.
 
 
 
+    Indexing Strategies for High Performance
+
+        Isolating the Column:
+            MySQL generally can’t use indexes on columns unless the columns are
+            isolated in the query. “Isolating” the column means it should not be part of an expres-
+            sion or be inside a function in the query.
+
+            SELECT actor_id FROM sakila.actor WHERE actor_id + 1 = 5;
+            SELECT actor_id FROM sakila.actor WHERE actor_id = 4;
+
+    Prefix Indexes and Index Selectivity:
+            Sometimes you need to index very long character columns, which makes your indexes
+            large and slow.
+
+            You can often save space and get good performance by indexing the first few characters
+            instead of the whole value.This makes your indexes use less space, but it also makes
+            them less selective.
+
+            A prefix of the column is often selective enough to give good performance. If you’re
+            indexing BLOB or TEXT columns, or very long VARCHAR columns, you must define prefix
+            indexes, because MySQL disallows indexing their full length.
+
+            The trick is to choose a prefix that’s long enough to give good selectivity, but short
+            enough to save space
+
+            “create indexes on columns that appear in the WHERE clause.” This advice is very wrong.
+
+            CREATE TABLE t (
+            c1 INT,
+            c2 INT,
+            c3 INT,
+            KEY(c1),
+            KEY(c2),
+            KEY(c3)
+            );
+
+            query can use both indexes, scanning them simultaneously and merging the results
+
+            The index merge strategy sometimes works very well, but it’s more common for it to
+            actually be an indication of a poorly indexed table
+
+            There is an old rule of thumb for choosing column order: place the most selective
+            columns first in the index.
 
 
 
+    Query Performance Optimization:
+
+        Here are a few typical mistakes:
+            Fetching more rows than needed,the best solution is add a LIMIT clause to the query
+
+            You should always be suspicious when you see SELECT * . Do you really need all
+            columns?
+
+        In many database servers, IN() is just a synonym for multiple OR clauses
+        Not so in MySQL, which sorts the values in the
+        IN() list and uses a fast binary search to see whether a value is in the list. This is
+        O(log n) in the size of the list, whereas an equivalent series of OR clauses is O(n) in
+        the size of the list
+
+        At the moment, MySQL’s join execution strategy is simple: it treats every join as a
+        nested-loop join. This means MySQL runs a loop to find a row from a table, then runs
+        a nested loop to find a matching row in the next table. It continues until it has found
+        a matching row in each table in the join. It then builds and returns a row from the
+        columns named in the SELECT list.
 
 
+        ==========================================inner join =============================
+        SELECT tbl1.col1, tbl2.col2
+        -> FROM tbl1 INNER JOIN tbl2 USING(col3)
+        -> WHERE tbl1.col1 IN(5,6);
 
 
+        outer_iter = iterator over tbl1 where col1 IN(5,6)
+        outer_row = outer_iter.next
+        while outer_row
+            inner_iter = iterator over tbl2 where col3 = outer_row.col3
+            inner_row = inner_iter.next
+            while inner_row
+                output [ outer_row.col1, inner_row.col2 ]
+                inner_row = inner_iter.next
+                end
+            outer_row = outer_iter.next
+        end
+        ==========================================left join================================
+        mysql> SELECT tbl1.col1, tbl2.col2
+        -> FROM tbl1 LEFT JOIN tbl2 USING(col3)
+        -> WHERE tbl1.col1 IN(5,6);
+
+        outer_iter = iterator over tbl1 where col1 IN(5,6)
+        outer_row = outer_iter.next
+        while outer_row
+        inner_iter = iterator over tbl2 where col3 = outer_row.col3
+        inner_row = inner_iter.next
+        if inner_row
+        while inner_row
+        output [ outer_row.col1, inner_row.col2 ]
+        inner_row = inner_iter.next
+        end
+        else
+        output [ outer_row.col1, NULL ]
+        end
+        outer_row = outer_iter.next
+        end
 
 
+        MySQL executes every kind of query in essentially the same way. For example, it han-
+        dles a subquery in the FROM clause by executing it first, putting the results into a tem-
+        porary table, 11 and then treating that table just like an ordinary table (hence the name
+        “derived table”). MySQL executes UNION queries with temporary tables too, and it
+        rewrites all RIGHT OUTER JOIN queries to equivalent LEFT OUTER JOINs . In short, current
+        versions of MySQL coerce every kind of query into this execution plan.
 
+        MySQL always begins with one table and finds matching rows in the next table.
+
+        If the values to be sorted will fit into the sort buffer, MySQL can perform the sort entirely
+        in memory with a quicksort. If MySQL can’t do the sort in memory, it performs it on
+        disk by sorting the values in chunks. It uses a quicksort to sort each chunk and then
+        merges the sorted chunks into the results.
+
+        MySQL sometimes optimizes subqueries very badly. The worst offenders are IN() sub-
+        queries in the WHERE clause.:
+
+        mysql> SELECT * FROM sakila.film
+        -> WHERE film_id IN(
+        ->      SELECT film_id FROM sakila.film_actor WHERE actor_id = 1);
+
+
+        MySQL tries to “help” the subquery by
+        pushing a correlation into it from the outer table, which it thinks will let the subquery
+        find rows more efficiently. It rewrites the query as follows:
+
+        SELECT * FROM sakila.film
+        WHERE EXISTS (
+        SELECT * FROM sakila.film_actor WHERE actor_id = 1
+        AND film_actor.film_id = film.film_id);
+
+        MySQL will table-scan the film table and execute the
+        subquery for each row it finds. This won’t cause a noticeable performance hit on small
+        tables, but if the outer table is very large, the performance will be extremely bad.
+
+        you can change it to:
+            mysql> SELECT film.* FROM sakila.film
+            ->
+            INNER JOIN sakila.film_actor USING(film_id)
+            -> WHERE actor_id = 1;
+
+        although IN() subqueries work poorly in many cases, EXISTS() or
+        equality subqueries sometimes work much better.
+
+
+        SELECT film_id, language_id FROM sakila.film
+        -> WHERE NOT EXISTS(
+        ->SELECT * FROM sakila.film_actor
+        ->WHERE film_actor.film_id = film.film_id
+        -> )\G
+
+        TO :
+
+        EXPLAIN SELECT film.film_id, film.language_id
+        -> FROM sakila.film
+        ->LEFT OUTER JOIN sakila.film_actor USING(film_id)
+        -> WHERE film_actor.film_id IS NULL\G
+
+
+        MySQL doesn’t let you SELECT from a table while simultaneously running an UPDATE on
+        it.
+
+        mysql> UPDATE tbl AS outer_tbl
+        ->SET cnt = (
+        ->SELECT count(*) FROM tbl AS inner_tbl
+        ->
+        WHERE inner_tbl.type = outer_tbl.type
+        ->);
+        ERROR 1093 (HY000): You can’t specify target table 'outer_tbl' for update in FROM
+        clause
+
+        mysql> UPDATE tbl
+        ->INNER JOIN(
+        ->SELECT type, count(*) AS cnt
+        ->FROM tbl
+        ->GROUP BY type
+        ->) AS der USING(type)
+        -> SET tbl.cnt = der.cnt;
+
+        COUNT() is a special function that works in two very different ways: it counts values and
+        rows. A value is a non- NULL expression ( NULL is the absence of a value). If you specify a
+        column name or other expression inside the parentheses, COUNT() counts how many
+        times that expression has a value.
+
+        The other form of COUNT() simply counts the number of rows in the result. This is what
+        MySQL does when it knows the expression inside the parentheses can never be NULL .
+        The most obvious example is COUNT(*) , which is a special form of COUNT() that does not
+        expand the * wildcard into the full list of columns in the table, as you might expect;
+        instead, it ignores columns altogether and counts rows.
+
+        One of the most common mistakes we see is specifying column names inside the
+        parentheses when you want to count rows. When you want to know the number of
+        rows in the result, you should always use COUNT(*) . This communicates your intention
+        clearly and avoids poor performance.
+
+        MySQL  storage engine always knows how many rows are in the table.
+
+        If MySQL knows
+        col can never be NULL , it can also optimize a COUNT(col) expression by converting it to
+        COUNT(*) internally.
+
+
+        SELECT COUNT(*) FROM world.City WHERE ID > 5;
+
+        If you examine this query with SHOW STATUS , you’ll see that it scans 4,079 rows. If you
+        negate the conditions and subtract the number of cities whose ID s are less than or equal
+        to 5 from the total number of cities, you can reduce that to five rows:
+
+        mysql> SELECT (SELECT COUNT(*) FROM world.City) - COUNT(*)
+        -> FROM world.City WHERE ID <= 5;
+
+        This version reads fewer rows because the subquery is turned into a constant during
+        the query optimization phase
+
+        Make sure there are indexes on the columns in the ON or USING clauses. Consider
+        the join order when adding indexes. If you’re joining tables A and B on column c
+        and the query optimizer decides to join the tables in the order B , A , you don’t need
+        to index the column on table B . Unused indexes are extra overhead. In general, you
+        need to add indexes only on the second table in the join order, unless they’re needed
+        for some other reason.
+
+        Try to ensure that any GROUP BY or ORDER BY expression refers only to columns from
+        a single table, so MySQL can try to use an index for that operation.
 
 
 
