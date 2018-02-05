@@ -458,4 +458,9 @@ public class HomeService {
         List<MysqlDateTime> response = userInfoRMapper.mysqlDateTime();
         return new ResponseResult<>(response);
     }
+
+    public ResponseResult concatLike(Map<String, String> params) {
+        String s = userInfoRMapper.concatLike(params);
+        return new ResponseResult<>(s);
+    }
 }

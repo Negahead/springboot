@@ -23,4 +23,6 @@ public interface UserInfoRMapper {
 
 
     List<MysqlDateTime> mysqlDateTime();
+
+    String concatLike(Map<String, String> params);
 }

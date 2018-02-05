@@ -370,4 +370,14 @@ public class HomeController {
         workbook.close();
     }
 
+    @RequestMapping(path = "/String2Int",method = RequestMethod.POST)
+    public ResponseResult String2Int(@RequestParam Map<String,String> params) {
+        /**
+         * r=requests.post("http://localhost:8080/home/String2Int",params={"age":"34","height":"100"})
+         * java.lang.String cannot be cast to java.lang.Integer
+         */
+
+        return homeService.concatLike(params);
+    }
+
 }

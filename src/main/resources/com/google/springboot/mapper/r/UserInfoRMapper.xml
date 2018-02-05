@@ -70,4 +70,9 @@
         SELECT id,age,createdOn,type from A
     </select>
 
+    <select id="concatLike" resultType="java.lang.String">
+        <bind name="pattern" value="role+'%'" />
+        select type from A where type like concat(#{role},'%') limit 1
+    </select>
+
 </mapper>
