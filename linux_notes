@@ -149,5 +149,30 @@ options:
     curl -H "Content-type: application/json;charset=UTF-8" -H "X-AUTH-TOKEN: 31D0A860-D603-413E-B430-20CCA5273E2F" -X POST -i -d '{"userNm":"system1"}' localhost:9000/biz/workOrder/userListByErp
     curl -H "Content-type: application/json;charset=UTF-8" -H "X-AUTH-TOKEN: 31D0A860-D603-413E-B430-20CCA5273E2F" -H "X-AUTH-UID: 104" -X POST -d '{}' localhost:9000/biz/workOrder/organizationList | json_pp
 
+==================================================grep=================================================================
 
+grep [OPTIONS] PATTERN [FILE...]
+grep [OPTIONS] [-e PATTERN]... [-f FILE]... [FILE...]
+
+    grep will /etc/passwd
+    -i,--ignore-case:
+    grep -i WILL /etc/passwd
+    -v,--invert-match:
+        Invert the sense of matching, to select non-matching lines.
+        grep -v will /etc/passwd
+    -w, --word-regexp:
+        Invert the sense of matching, to select non-matching lines.
+    -x, --line-regexp:
+        Select only those matches that exactly match the whole line.  For a regular expression pattern, this is like
+        parenthesizing the pattern and then surrounding it with ^ and $.
+    -H, --with-filename:
+        Print the file name for each match.  This is the default when there is more than one file to search.
+    -n, --line-number:
+        Prefix each line of output with the 1-based line number within its input file.
+    -o, --only-matching:
+        Print only the matched (non-empty) parts of a matching line, with each such part on a separate output line.
+    -l, --files-with-matches:
+        Suppress normal output; instead print the name of each input file from which output would normally have been printed.  The scanning will stop on the first match.
+    -c, --count:
+        Suppress normal output; instead print a count of matching lines for each input file.
 
