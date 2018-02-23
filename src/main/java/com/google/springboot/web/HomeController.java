@@ -1,6 +1,7 @@
 package com.google.springboot.web;
 
 import com.google.springboot.entity.ResponseResult;
+import com.google.springboot.entity.beans.Person;
 import com.google.springboot.entity.request.OrgOperationRequest;
 import com.google.springboot.service.HomeService;
 import org.apache.ibatis.annotations.Param;
@@ -55,13 +56,27 @@ public class HomeController {
     HomeService homeService;
 
     @GetMapping(path = "/index/{petId}")
-    public ResponseResult home(@RequestHeader("user-agent") String userAgent,@RequestHeader("X-AUTH-TOKEN") String token,@PathVariable String petId) {
+    public ResponseResult home(@RequestHeader("user-agent") String userAgent,
+                               @RequestHeader("X-AUTH-TOKEN") String token,
+                               @PathVariable String petId,
+                               @RequestParam Map<String,String> allVariables) {
         return homeService.home();
     }
 
     @GetMapping("/userInfo")
     public ResponseResult getUserInfo() {
         return homeService.getUserInfo();
+    }
+
+    @RequestMapping(path = "/simplePost",method = RequestMethod.POST)
+    public ResponseResult simplePost(@RequestParam("name") String name,@RequestParam("age") int age) {
+        return homeService.simplePost(name,age);
+    }
+
+    @RequestMapping(path = "/simplePostBody",method = RequestMethod.POST)
+    public ResponseResult simplePostBody(@RequestBody Person person) {
+        System.out.println("====================");
+        return new ResponseResult<>("");
     }
 
 
@@ -79,7 +94,7 @@ public class HomeController {
     /**
      * HTTP post request ,the values are sent in the request body,in the format that the content type specifies,
      * Usually the content type is application/x-www-form-urlencoded,so the request body uses the same format as the query string:
-     *  parameter=value&also=another,non-alphanumeric characters are percent encoded.
+     *  parameter=value&also=another,non-alphanumeric characters are percent encoded,so it's not suitable for binary data transfer.
      * when you use a file upload in the form,you use the multipart/form-data encoding instead,which has a different format.
      * @param operator
      * @return

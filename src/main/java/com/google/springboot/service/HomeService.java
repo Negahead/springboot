@@ -463,4 +463,11 @@ public class HomeService {
         String s = userInfoRMapper.concatLike(params);
         return new ResponseResult<>(s);
     }
+
+    public ResponseResult simplePost(String name, int age) {
+        Map<String,String> result = new HashMap<>();
+        result.put("game","HearthStone");
+        result.put("name","Pavel");
+        return new ResponseResult<>(result);
+    }
 }
