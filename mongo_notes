@@ -1,3 +1,61 @@
+MongoDB is a document-oriented database,not a relational one.The primary reason for moving away from the relational
+model is to make scaling out easier.A document-oriented database replaces the concept of a "row" with a more
+flexible model,the "document".By allowing embedded documents and arrays,the document-oriented approach makes it
+possible to represent complex hierarchical relationships with a single record.This fits naturally into the way
+developers in modern object-oriented languages think about their data.
+
+There are also no predefined schemas.
+
+MongoDB was designed to scale out.Its document-oriented data model makes it easier for it to split up data across
+multiple servers.MongoDB automatically takes care of balancing data and load across a cluster,redistributing
+documents automatically and routing user requests to the correct machines.When a cluster need more capacity,new
+machines can be added and MongoDB will figure out how the existing data should be spread to them.
+
+A document is the basic unit of data for mongoDB and is roughly equivalent to a row in a relational database
+management system(but much more expressive)
+Similarly,a collection can be thought of as a table with dynamic schema.
+A single instance of MongoDB can host multiple independent databases,each of which can have its own collections.
+Every document has a special key,"_id",that is unique withing a collection.
+
+At the heart of MongoDB is the document:an ordered set of keys with associated values.
+
+the keys in a document are strings:
+    Keys must not contain the character \0;
+    The . and $ should be considered reserved.
+    documents in MongoDB cannot contain duplicate keys.
+    key/value pairs in documents are ordered:
+        {"x":1,"y":2} is not the same as {"y":2,"x":1}
+MongoDB is type-sensitive and case-sensitive.those documents are distinct:
+    {"foo":3}
+    {"Foo":3}
+
+Collections:A collection is a group of documents,like a table is SQL.Collections have dynamic schemas.This means
+            that a single collection can have any number of different shapes:
+                {"greeting":"Hello world"}
+                {"foo":5}
+
+            A collection is identified by its name:
+                The empty string("") is not a valid collection name.
+                You should not create any collections that start with system.,this is a prefix reserved for internal collections.
+                User-created collections should not contain the reserved character $ in the name.
+
+Databases:MongoDB groups collections into databases.A single instance of MongoDB can host several databases.each grouping
+          together zero or more collections.A database has its own permissions,and each database is stored in separate
+          files on disk.
+
+          A database is identified by its name:
+                the empty string "" is not a valid database name.
+                a data base name cannot contain any of these characters:/ \ . " < > : | ? $ ( space ) or \0.
+          Database names are case-sensitive,to keep things simple,try to just use lowercase characters.
+
+          Database names will actually end up as files on your filesystem.
+
+          Reserved database name: admin,local,config.
+
+By default,MongoDB listens for socket connections on port 27017.also,you can get some administrative information
+about your database by opening a web browser and going to http://localhost:28017
+
+
 Insert new Document:
 	post={"title":"My blog post","content":"here's my blog post","date":new Date()}
 	db.blog.insert(post);
@@ -12,7 +70,9 @@ delete document:
 
 
 Data Types:
+    null
 	{"x":null}
+	boolean
 	{"x":true}
 	number,default is 64-bit floating point numbers:
 	{"x":3.14}
@@ -22,30 +82,54 @@ Data Types:
 	string
 	{"x":"foobar"}
 	date
-	{"x":new Date()}
+	{"x":new Date()},when creating a new Date object,always call new Date(...)
 	regular expression
 	{"x":/foobar/i}
 	array
-	{"x":[1,2,3,4,5]}
+	{"x":[1,2,3,4,5,"pie",3.14]}
 	object id
 	{"x":new ObjectId()}
 
+If you have frequently-loaded scripts you might want to put them in your .mongorc.js file in your home directory(i.e.,/home/me/.mongorc.js)
 
 
-Modifiers:
-	$set:set or create a new field
-	    db.foo.update({"name":"joe"},{"$inc":{"comments.0.vote":1}})  # index based
+
+insert:
+    db.foo.insert({"bar":"baz"})
+batch insert,insert multiple documents into a single collection.
+    db.foo.batchInsert([{"_id":1},{"_id":2}])
+remove:
+    db.foo.remove(): this will remove all the documents in the foo collection.
+
+Modifiers(update a certain portions of a document):
+	$set:update or create a new field
+	{
+    	"_id" : ObjectId("5aafbebfdb34551e78249617"),
+    	"name" : "joe",
+    	"age" : 30,
+    	"sex" : "male",
+    	"location" : "Wisconsin"
+    }
+
+    db.foo.update({"name":"joe"},{"$set":{"favorite book":"War and Peace"}}) # add new field
+
+    db.foo.update({"name":"joe"},{"$set":{"sex":"female"}}) # override existing field
+
 	$unset: remove a field:
-		db.foo.update({"name":"joe"},{"$unset":{"favorite book":1}})
-		this will delete "favorite book" field
-	$inc:increment or decrement
-	$push:create or modify an array
-	    # this will push the object into it as a whole
+		db.foo.update({"name":"joe"},{"$unset":{"favorite book":1}}) # this will delete "favorite book" field
+
+	$inc:increment or decrement,change the value for an existing key or to create a new key if it doesn't exist.
+	    db.foo.update({"name":"joe"},{"$inc":{"comments.0.vote":1}})  # index based
+
+	$push:create or modify an array,add elements to the end of an array if exists or create a new array if it does not.
+	    # this will push the object into it as a whole,namely,embedded array
 		db.foo.update({"name":"joe"},{"$push":{"favorite book":["book1","book2"]}})
 		# push as single,namely each:
 		db.foo.update({"name":"joe"},{"$push":{"favorite book":{"$each":["Pro git","MySQL Cookbook"]}}})
 		# only last 5 numbers,slice is always negative.
 		db.foo.update({"name":"joe"},{"$push":{"number":{"$each":[1,2,3,4,5,6,7,8,9,10],"$slice":-5}}})
+		# push if only not exist
+		db.foo.update({"index":{"$ne":1}},{"$push":{"comments":1}}) # actually is document selection filter.
 	$addToSet
 	    # add to set do not guarantee a particular ordering of elements in the modified set
 	    # if the field is absent,$addToSet will creates the array field
@@ -59,46 +143,66 @@ Modifiers:
 
 
 	# difference between addToSet and push:
-	    #addToSet do not add the item to the given field if it already contains it,on the other hand,$push
+	    $addToSet do not add the item to the given field if it already contains it,on the other hand,$push
 	    will add the given object to the field whether it exists or not!
 
 	$pop
 	    # $pop operation will fail if the field is not an array type
-	    # pop out the last one,old field is changed
+	    # also you can pop any array element,it is zero indexed.
+	    # $pop out the last element,old field is changed
 	    db.foo.update({"name":"joe"},{"$pop":{"number":1}})
-	    # pop out the first one
+	    # pop out the first element
 	    db.foo.update({"name":"joe"},{"$pop":{"number":-1}})
-	$pull: remove element base on specific criteria
-	$setOnInsert: only sets the value of a field when the document is being inserted,
+	$pull: remove element from an existing array all instances of a value or values that match a specific condition
+	    db.foo.insert({"index":1},["todo1","dishes","laundry","dry cleaning"]})
+	    db.foo.update({"index":1},{"$pull":{"todo1":"laundry"}}) # laundry is removed from the list
 
-upsert
+upsert,
+    it is a special type of update,If no document is found that matches the update criteria,a new document will be
+    created =by combining the criteria an updated documents=.If a matching document is found,it will be updated normally.
+
     db.foo.update({"name":"joe"},{"$inc":1},true) # the third argument means this is an upsert query
-    db.foo.update({"rep":20},{"inc":{"rep":3}},true),is {"rep":20} does not exist and upsert in not set,
-    nothing will happen,but this will create another new document and "rep" is now 23
+    db.foo.update({"rep":20},{"inc":{"rep":3}},true) # this will create another new document and "rep" is now 23
+
+    $setOnInsert: only sets the value of a field when the document is being inserted.If an update operation with
+                  upsert:true result in an insert of a document,then $setOnInsert assigns the specified values to
+                  the fields in the document.If the update operation does not result in an insert,$setOnInsert does nothing.
+
 
 update multiple Documents:
     update will only update the first document,to modify all of the documents matching the criteria,you can pass true
     as the fourth parameter to update.
 
-    db.foo.update({"number":20},{"info":{"age":22,"country":"USA"}},{"multi":true}})
+    db.foo.update({"number":20},{"info":{"age":22,"country":"USA"}},false,true)
 
 
 Query:
+    # the find method is used to perform queries in MongoDB,Querying returns a subset of documents in a collection.
+    # which documents get returned is determined by the first argument to find,which is a document specifying the query criteria
+
     # The positional $ operator acts as a placeholder for the first match of the update query document.
-    # you pass a second argument to find specifying the keys you want,> 0 is true,= 0 is false
+
+    # you pass a second argument to find specifying the keys you want,> 0 is true,== 0 is false(even "_id")
     db.foo.find({},{"name":1})
 
     Query Conditionals
     "$lt" <
+        {field: {$lt: value}}
     "$lte" <=
     "$gt" >
     "$gte" >=
     "$ne" !=
+        db.foo.find({"name":{"$ne":"joe"}})
     "$eq" ==
     "$in":selects the documents where the value of a field equals any value in the specified array
         {field:{"$in":[value1,value2,...valueN]}}
     "$nin":the opposite of $in
-    db.foo.find({"age":{"$gte":20,"$lte":30}})
+
+    db.foo.find({"age":{"$gte":20,"$lte":30}}) # if age is an array,things will be different,either match will return it.
+                                               # you can use $elemMatch to force MongoDB to compare both clauses with a
+                                               # single array element,but won't match non-array element
+    db.foo.find({"x":{"$elemMatch":{"$gt":10,"$lt":20}})
+
     db.foo.find({"registered":{"$gte":new Date(01/01/2017)}})
     db.foo.findOne({"registered":{"$lte":new Date("2017-10-01")}})
 
@@ -108,7 +212,13 @@ Query:
         {"$and":[{expression1},{expression2},..,]}
     $or
         { $or: [ { <expression1> }, { <expression2> }, ... , { <expressionN> } ] }
+        db.foo.find({"$or":[{"ticket_no":75}, {"winner": true}]})
+    $in
+        select documents where the value of the field equals any value in the specified array.
+        {field: {"$in":[<value1>, <value2>, ... <valueN>] } }
         db.foo.find({"$in":[{"number":{"$in":[7,9}},{"isMarried":"yes"}]})
+    null:find keys whose value is null,we can check that the key is null and exists using the $exists conditional:
+        db.foo.find({"z":{"$in":[null],"$exists":true}})
     $mod
         db.foo.find({"number":{"$mod":[2,1]}})
     $not
@@ -128,27 +238,29 @@ regular expressions:
 
 Query arrays:
     $all
-    find all documents with both "apple" and "banana" elements,order does not count.
-    db.foo.find({"fruit":{"$all":["apple","banana"]}})
+        {field: {$all: [<value1>, <value2>, <value3>,...]}}
+        find all documents with both "apple" and "banana" elements,order does not count.
+        db.foo.find({"fruit":{"$all":["apple","banana"]}})
 
     $size
-    db.foo.find({"number":{"$size":7}})
+        query for arrays of a given size
+        db.foo.find({"number":{"$size":7}})
 
     $slice
-    return the first 3 numbers:
-    db.foo.findOne({"name":"joe"},{"number":{"$slice":3}})
-    offset and length,zero index based
-    db.foo.findOne({"name":"joe"},{"number":{"$slice":[2,3]}})
-    db.foo.findOne({"name":"joe"},{"number":{"$slice":[-3,2]}}) # starting from last
+        the $slice operator controls the number if items of an array that a query returns
 
-    array query
-    {"X":[5,25]}
-    {"x":{"$gt":10,"$lt":20}} will match,match any one of them is return
+        db.foo.findOne({"name":"joe"},{"number":{"$slice":3}}) # return the first 3 numbers
+        db.foo.findOne({"name":"joe"},{"number":{"$slice":-3}}) # return the last 3 numbers
+        db.foo.findOne({"name":"joe"},{"number":{"$slice":[2,3]}}) # offset and length,zero index based
+        db.foo.findOne({"name":"joe"},{"number":{"$slice":[-3,2]}}) # starting from last
+    embedded element:
+        db.foo.find({"name.first":"Joe","name.last":"Schmoe"})
 
 
 limits,skip and Sorts
     db.foo.find().limit(2) # upper limit
     db.foo.find().skip(3) # skip the first three matching documents and return the rest of the matches
+                          # large skips is slow,you should avoid that.
 
     # sort takes an object,1 for ascending,-1 for descending
     db.foo.find().sort({"username":1,"age":-1})
@@ -161,9 +273,182 @@ Aggregation Framework
     each result stream only exists in memory and are not written to disk anywhere.
 
 
+    db.foo.insert({"name":"Jennifer Lawrence"})
+    db.foo.insert({"name":"Sam Rockwell"})
+    db.foo.insert({"name":"Margot Robbie"})
+    db.foo.insert({"name":"Alicia Vikander"})
+    db.foo.insert({"name":"Saoirse Ronan"})
+    db.foo.insert({"name":"Gal Gadot"})
+    db.foo.insert({"name":"Gary Oldman"})
+
     db.bar.aggregate({"$project":{"name":1}},{"$group":{"_id":"$name","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":1})
+
+    {"$project":{"name":1}}:
+            This projects the name field in each document,you can select fields to project by specifying "fieldname":1 or
+            exclude fields with "fieldname":0.After this operation,each document in th results looks like {"_id":id,
+            "name":"name"}
+
+    {"$group":{"_id":"$name","count":{"$sum":1}}}:
+            This groups the authors by name and increments "count" for each document an author appears in.first,we specify
+            the field we want to group by,which is "author".This is indicated by the "_id":"=$=name" field,you can picture
+            this as : after the group there will be one result document per name,so "name" becomes the unique identifier
+
+            the second field means to add 1 to a "count" field for each document in the group.Note that the incoming documents
+            do not have a "count" field,this is a new field created by the "$group"
+
+            at the end of this step,each document in the results look like {"_id":"actor name","count": actorCount}
+
+
     # 1: 1 to include,0 to exclude,by default,"_id" is always returned.
     # 2: after the group there will be one result document per name,so "name" become the unique identifier,it has to be "_id" or error
+
+
+    Aggregation PipeLine Operators:
+        $abs:
+            {$abs: <number>},<number> expression can by any valid expression as long as it resolves to a number.
+
+            { _id: 1, start: 5, end: 8 }
+            { _id: 2, start: 4, end: 4 }
+            { _id: 3, start: 9, end: 7 }
+            { _id: 4, start: 6, end: 7 }
+
+            db.rating.aggregate([ { $project:{delta:{$abs:{$subtract:["$start","$end"]}}} } ]) result is :
+
+            { "_id" : 1, "delta" : 3 }
+            { "_id" : 2, "delta" : 0 }
+            { "_id" : 3, "delta" : 2 }
+            { "_id" : 4, "delta" : 1 }
+        $add:
+            Adds number together or adds numbers and a date,if one of the argument is a date,$add treats the other
+            arguments as milliseconds to add to the date.
+
+            {$add: [<expression1>,<expression2>,...]}
+
+            { "_id" : 1, "item" : "abc", "price" : 10, "fee" : 2, date: ISODate("2014-03-01T08:00:00Z") }
+            { "_id" : 2, "item" : "jkl", "price" : 20, "fee" : 1, date: ISODate("2014-03-01T09:00:00Z") }
+            { "_id" : 3, "item" : "xyz", "price" : 5,  "fee" : 0, date: ISODate("2014-03-15T09:00:00Z") }
+
+            db.sales.aggregate(
+               [
+                 { $project: { item: 1, total: { $add: [ "$price", "$fee" ] } } }
+               ]
+            )
+
+            { "_id" : 1, "item" : "abc", "total" : 12 }
+            { "_id" : 2, "item" : "jkl", "total" : 21 }
+            { "_id" : 3, "item" : "xyz", "total" : 5 }
+
+        $addToSet:
+            returns an array of all unique values that results from applying an expression to each document in a
+            group of documents that share the same group by key.it is only available in the $group stage.
+
+            {$addToSet: <expression> }
+
+            { "_id" : 1, "item" : "abc", "price" : 10, "quantity" : 2, "date" : ISODate("2014-01-01T08:00:00Z") }
+            { "_id" : 2, "item" : "jkl", "price" : 20, "quantity" : 1, "date" : ISODate("2014-02-03T09:00:00Z") }
+            { "_id" : 3, "item" : "xyz", "price" : 5, "quantity" : 5, "date" : ISODate("2014-02-03T09:05:00Z") }
+            { "_id" : 4, "item" : "abc", "price" : 10, "quantity" : 10, "date" : ISODate("2014-02-15T08:00:00Z") }
+            { "_id" : 5, "item" : "xyz", "price" : 5, "quantity" : 10, "date" : ISODate("2014-02-15T09:12:00Z") }
+
+            db.sales.aggregate(
+               [
+                 {
+                   $group:
+                     {
+                       _id: { day: { $dayOfYear: "$date"}, year: { $year: "$date" } },
+                       itemsSold: { $addToSet: "$item" }
+                     }
+                 }
+               ]
+            )
+
+            { "_id" : { "day" : 46, "year" : 2014 }, "itemsSold" : [ "xyz", "abc" ] }
+            { "_id" : { "day" : 34, "year" : 2014 }, "itemsSold" : [ "xyz", "jkl" ] }
+            { "_id" : { "day" : 1, "year" : 2014 }, "itemsSold" : [ "abc" ] }
+
+        $allElementsTrue:
+            Evaluates an array as a set and returns true if no element in the array is false.otherwise,returns false.
+
+        $first:
+            Returns the value that results from applying an expression to the first document in a group of documents
+            that share the same group by key.Only meaningful when documents are in a defined order.
+
+            $first is only available in the $group stage.
+
+            { "_id" : 1, "item" : "abc", "price" : 10, "quantity" : 2, "date" : ISODate("2014-01-01T08:00:00Z") }
+            { "_id" : 2, "item" : "jkl", "price" : 20, "quantity" : 1, "date" : ISODate("2014-02-03T09:00:00Z") }
+            { "_id" : 3, "item" : "xyz", "price" : 5, "quantity" : 5, "date" : ISODate("2014-02-03T09:05:00Z") }
+            { "_id" : 4, "item" : "abc", "price" : 10, "quantity" : 10, "date" : ISODate("2014-02-15T08:00:00Z") }
+            { "_id" : 5, "item" : "xyz", "price" : 5, "quantity" : 10, "date" : ISODate("2014-02-15T09:05:00Z") }
+            { "_id" : 6, "item" : "xyz", "price" : 5, "quantity" : 5, "date" : ISODate("2014-02-15T12:05:10Z") }
+            { "_id" : 7, "item" : "xyz", "price" : 5, "quantity" : 10, "date" : ISODate("2014-02-15T14:12:12Z") }
+
+            db.sales.aggregate(
+               [
+                 { $sort: { item: 1, date: 1 } },
+                 {
+                   $group:
+                     {
+                       _id: "$item",
+                       firstSalesDate: { $first: "$date" }
+                     }
+                 }
+               ]
+            )
+
+            { "_id" : "xyz", "firstSalesDate" : ISODate("2014-02-03T09:05:00Z") }
+            { "_id" : "jkl", "firstSalesDate" : ISODate("2014-02-03T09:00:00Z") }
+            { "_id" : "abc", "firstSalesDate" : ISODate("2014-01-01T08:00:00Z") }
+
+        $ifNull:
+            { $ifNull: [ <expression>, <replacement-expression-if-null> ] }
+        $in
+            Returns a boolean indicating whether a specified value is in an array.
+            { $in: [ <expression>, <array expression> ] }
+
+        $indexOfArray
+            Searches an array for an occurrence of a specified value and returns the array index(zero-indexed)
+            of the first occurrence,if not found,returns -1.
+
+            { $indexOfArray: [ <array expression>, <search expression>, <start>, <end> ] }
+
+        $isoDayOfWeek
+            Returns the weekday number in ISO 8601 format, ranging from 1 (for Monday) to 7 (for Sunday).
+
+            { $isoDayOfWeek: <dateExpression> }
+        $map
+            Applies an expression to each item in an array and returns an array with the applied results
+
+            { $map: { input: <expression>, as: <string>, in: <expression> } }
+
+        $mod
+            Divides one number by another and returns the reminder
+            { $mod: [ <expression1>, <expression2> ] }
+
+        $push
+            Returns an array of all values that result from applying an expression to each document
+            in a group of documents that share the same group by key.
+
+            $push is only available in the $group stage.
+
+        $reduce
+            {
+               $reduce: {
+                  input: [ [ 3, 4 ], [ 5, 6 ] ],
+                  initialValue: [ 1, 2 ],
+                  in: { $concatArrays : ["$$value", "$$this"] }
+               }
+            } #[1,2,3,4,5,6]
+
+            value is the variable that represents the cumulative value of the expression.
+            this is the variable that refers to the element being processed.
+
+        $setDifference
+            Takes two sets and returns an array containing the elements that only exist in the first set.
+
+            { $setDifference: [ <expression1>, <expression2> ] } # expression should be resolved to an array.
+
+
 
 
     db.bar.aggregate({"$project":{"id":"$_id","_id":0}})
