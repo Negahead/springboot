@@ -3,6 +3,7 @@ package com.google.springboot.web;
 import com.google.springboot.entity.ResponseResult;
 import com.google.springboot.entity.beans.Person;
 import com.google.springboot.entity.request.OrgOperationRequest;
+import com.google.springboot.entity.response.TeacherInfo;
 import com.google.springboot.service.HomeService;
 import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.*;
@@ -30,6 +31,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -392,7 +394,12 @@ public class HomeController {
          * java.lang.String cannot be cast to java.lang.Integer
          */
 
-        return homeService.concatLike(params);
+//        return homeService.concatLike(params);
+        TeacherInfo teacherInfo = new TeacherInfo();
+        teacherInfo.setPersonTag("tag");
+        teacherInfo.setWebViewName("webViewName");
+        teacherInfo.setNames(Arrays.asList("dopa","faker","Rookie"));
+        return new ResponseResult<>(teacherInfo);
     }
 
 }
