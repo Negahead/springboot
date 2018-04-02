@@ -1,0 +1,6 @@
+acme:
+  list:
+    - name: My name
+      description: My description
+    - name: dopa
+      description: dopa description

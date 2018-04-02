@@ -2,6 +2,7 @@ package com.google.springboot.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -32,7 +33,7 @@ import java.util.Map;
  */
 // you can optionally define a custom source where we are storing these properties,else the default location application.properties
 // is looked up.
-// @PropertySource("classpath:configProps.properties")
+//@PropertySource("classpath:configProps.properties")
 @ConfigurationProperties(prefix = "spring.datasource.druid")
 public class PropertyConfiguration {
     private String url;
