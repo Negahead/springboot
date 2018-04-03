@@ -150,7 +150,7 @@ public class HomeService {
     }
 
     public ResponseResult invokeMongoDB() {
-        Customer customer = customerRepository.findFirstByName("Tom Hardy");
+        Customer customer = customerRepository.findFirstByName("Sam Rockwell");
         if(customer != null) {
             return new ResponseResult<>(customer);
         }

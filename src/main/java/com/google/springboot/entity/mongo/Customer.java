@@ -33,7 +33,7 @@ public class Customer {
      * if number in mongoDB is like [12,34],it will retrieve 12
      */
 
-    @Field("number")
+    @Field("age")
     private int number;
 
     /**

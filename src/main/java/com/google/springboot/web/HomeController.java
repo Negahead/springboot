@@ -98,11 +98,10 @@ public class HomeController {
      * Usually the content type is application/x-www-form-urlencoded,so the request body uses the same format as the query string:
      *  parameter=value&also=another,non-alphanumeric characters are percent encoded,so it's not suitable for binary data transfer.
      * when you use a file upload in the form,you use the multipart/form-data encoding instead,which has a different format.
-     * @param operator
      * @return
      */
     @RequestMapping(value = "/mongodb",method = RequestMethod.POST)
-    public ResponseResult invokeMongoDB(@RequestParam("param") String operator,@RequestParam("curl") String curl) {
+    public ResponseResult invokeMongoDB() {
         return homeService.invokeMongoDB();
     }
 
